@@ -16,7 +16,7 @@ interface ConfigScreenProps {
 }
 
 const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
-  const { curSession, } = appState;
+  const { curSession } = appState;
   const [imageEditor, setImageEditor] = useState('');
   const [useGPU, setUseGPU] = useState(false);
   const [whiteMode, setWhiteMode] = useState(false);
@@ -182,11 +182,13 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
                 <option value="mspaint">그림판</option>
               </select>
             </div>
-            <label
-              className="block text-sm gray-label"
-            >
+            <label className="block text-sm gray-label">
               로컬 배경 제거 모델 사용{' '}
-              <input type="checkbox" checked={useLocalBgRemoval} onChange={(e) => setUseLocalBgRemoval(e.target.checked)} />
+              <input
+                type="checkbox"
+                checked={useLocalBgRemoval}
+                onChange={(e) => setUseLocalBgRemoval(e.target.checked)}
+              />
             </label>
             {!ready && (
               <div className="mt-4">

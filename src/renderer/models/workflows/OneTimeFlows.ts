@@ -1,12 +1,22 @@
-import { backend, imageService, localAIService, taskQueueService, workFlowService } from "..";
-import { AugmentMethod, Resolution, upscaleReoslution } from "../../backends/imageGen";
-import { getImageDimensions } from "../../componenets/BrushTool";
-import { appState } from "../AppService";
-import { dataUriToBase64 } from "../ImageService";
-import { queueI2IWorkflow, TaskParam } from "../TaskQueueService";
-import { AugmentJob, GenericScene, SDAbstractJob, Session } from "../types";
-import { emotions } from "./AugmentWorkFlow";
-import { createI2IPreset } from "./SDWorkFlow";
+import {
+  backend,
+  imageService,
+  localAIService,
+  taskQueueService,
+  workFlowService,
+} from '..';
+import {
+  AugmentMethod,
+  Resolution,
+  upscaleReoslution,
+} from '../../backends/imageGen';
+import { getImageDimensions } from '../../componenets/BrushTool';
+import { appState } from '../AppService';
+import { dataUriToBase64 } from '../ImageService';
+import { queueI2IWorkflow, TaskParam } from '../TaskQueueService';
+import { AugmentJob, GenericScene, SDAbstractJob, Session } from '../types';
+import { emotions } from './AugmentWorkFlow';
+import { createI2IPreset } from './SDWorkFlow';
 
 export const queueRemoveBg = async (
   session: Session,
@@ -17,9 +27,7 @@ export const queueRemoveBg = async (
 ) => {
   const config = await backend.getConfig();
   if (config.useLocalBgRemoval && !localAIService.ready) {
-      appState.pushMessage(
-      '환경설정에서 배경 제거 기능을 활성화해주세요',
-    );
+    appState.pushMessage('환경설정에서 배경 제거 기능을 활성화해주세요');
     return;
   }
   const job: AugmentJob = {
@@ -28,7 +36,7 @@ export const queueRemoveBg = async (
     prompt: { type: 'text', text: '' },
     method: 'bg-removal',
     backend: {
-      type: config.useLocalBgRemoval ? 'SD' : 'NAI'
+      type: config.useLocalBgRemoval ? 'SD' : 'NAI',
     },
     width: 0,
     height: 0,
@@ -51,13 +59,14 @@ const queueAugment = async (
   onComplete?: (path: string) => void,
   emotion?: string,
   prompt?: string,
-  weaken?: number) => {
+  weaken?: number,
+) => {
   const { width, height } = await getImageDimensions(image);
   const job: AugmentJob = {
     type: 'augment',
     image: image,
     emotion: emotion,
-    prompt: { type: 'text', text: prompt ?? ''},
+    prompt: { type: 'text', text: prompt ?? '' },
     method: method,
     weaken: weaken,
     backend: {
@@ -75,7 +84,7 @@ const queueAugment = async (
   };
   const samples = appState.samples;
   taskQueueService.addTask(params, samples);
-}
+};
 
 const createQueueAugment = (method: AugmentMethod) => {
   return async (
@@ -87,20 +96,20 @@ const createQueueAugment = (method: AugmentMethod) => {
   ) => {
     await queueAugment(method, session, scene, image, onComplete);
   };
-}
+};
 
 export const queueDeclutter = createQueueAugment('declutter');
 export const queueSketch = createQueueAugment('sketch');
 export const queueLineart = createQueueAugment('lineart');
 
-const getColorizeInput = async (
-  session: Session,
-) => {
-
+const getColorizeInput = async (session: Session) => {
   const defry = await appState.pushDialogAsync({
     text: 'defry를 선택해주세요',
     type: 'dropdown',
-    items: [0,1,2,3,4,5].map((x) => ({ text: x.toString(), value: x.toString() })),
+    items: [0, 1, 2, 3, 4, 5].map((x) => ({
+      text: x.toString(),
+      value: x.toString(),
+    })),
   });
   if (defry == null) return null;
 
@@ -110,7 +119,7 @@ const getColorizeInput = async (
   });
   if (prompt == null) return null;
   return { prompt, weaken: parseInt(defry) };
-}
+};
 
 const queueColorize = async (
   session: Session,
@@ -121,12 +130,19 @@ const queueColorize = async (
   input?: any,
 ) => {
   if (input == null) return;
-  await queueAugment('colorize', session, scene, image, onComplete, undefined, input.prompt, input.weaken);
-}
+  await queueAugment(
+    'colorize',
+    session,
+    scene,
+    image,
+    onComplete,
+    undefined,
+    input.prompt,
+    input.weaken,
+  );
+};
 
-const getEmotionInput = async (
-  session: Session,
-) => {
+const getEmotionInput = async (session: Session) => {
   const emotion = await appState.pushDialogAsync({
     text: '감정을 선택해주세요',
     type: 'dropdown',
@@ -137,7 +153,10 @@ const getEmotionInput = async (
   const defry = await appState.pushDialogAsync({
     text: 'defry를 선택해주세요',
     type: 'dropdown',
-    items: [0,1,2,3,4,5].map((x) => ({ text: x.toString(), value: x.toString() })),
+    items: [0, 1, 2, 3, 4, 5].map((x) => ({
+      text: x.toString(),
+      value: x.toString(),
+    })),
   });
   if (defry == null) return null;
 
@@ -147,7 +166,7 @@ const getEmotionInput = async (
   });
   if (prompt == null) return null;
   return { emotion, prompt, weaken: parseInt(defry) };
-}
+};
 
 const queueEmotion = async (
   session: Session,
@@ -158,8 +177,17 @@ const queueEmotion = async (
   input?: any,
 ) => {
   if (input == null) return;
-  await queueAugment('emotion', session, scene, image, onComplete, input.emotion, input.prompt, input.weaken);
-}
+  await queueAugment(
+    'emotion',
+    session,
+    scene,
+    image,
+    onComplete,
+    input.emotion,
+    input.prompt,
+    input.weaken,
+  );
+};
 
 const noiseTable = [
   { strength: 0.2, noise: 0 },
@@ -167,26 +195,24 @@ const noiseTable = [
   { strength: 0.5, noise: 0 },
   { strength: 0.6, noise: 0 },
   { strength: 0.7, noise: 0.1 },
-]
+];
 
-const getStrengthInput = async (
-  session: Session,
-) => {
+const getStrengthInput = async (session: Session) => {
   const menu = await appState.pushDialogAsync({
     text: '강도를 선택해주세요',
     type: 'select',
     items: [
-      { text: '강도 1', value: '1'},
-      { text: '강도 2', value: '2'},
-      { text: '강도 3', value: '3'},
-      { text: '강도 4', value: '4'},
-      { text: '강도 5', value: '5'},
-    ]
+      { text: '강도 1', value: '1' },
+      { text: '강도 2', value: '2' },
+      { text: '강도 3', value: '3' },
+      { text: '강도 4', value: '4' },
+      { text: '강도 5', value: '5' },
+    ],
   });
   if (!menu) return null;
   const st = parseInt(menu);
   return noiseTable[st - 1];
-}
+};
 
 export const queueI2I = async (
   session: Session,
@@ -198,13 +224,15 @@ export const queueI2I = async (
 ) => {
   if (!input) return;
   const samples = appState.samples;
-  const preset = imgJob ? createI2IPreset(imgJob, image) : workFlowService.buildPreset('SDI2I');
+  const preset = imgJob
+    ? createI2IPreset(imgJob, image)
+    : workFlowService.buildPreset('SDI2I');
   preset.image = image;
   const { strength, noise } = input;
   preset.strength = strength;
   preset.noise = noise;
   await queueI2IWorkflow(session, 'SDI2I', preset, scene, samples, onComplete);
-}
+};
 
 export const queueEnhance = async (
   session: Session,
@@ -216,7 +244,9 @@ export const queueEnhance = async (
 ) => {
   if (!input) return;
   const samples = appState.samples;
-  const preset = imgJob ? createI2IPreset(imgJob, image) : workFlowService.buildPreset('SDI2I');
+  const preset = imgJob
+    ? createI2IPreset(imgJob, image)
+    : workFlowService.buildPreset('SDI2I');
   preset.image = image;
   preset.smea = false;
   preset.dyn = false;
@@ -225,11 +255,18 @@ export const queueEnhance = async (
   preset.noise = noise;
   preset.overrideResolution = upscaleReoslution(scene.resolution as Resolution);
   await queueI2IWorkflow(session, 'SDI2I', preset, scene, samples, onComplete);
-}
+};
 
 interface OneTimeFlowItem {
   text: string;
-  handler: (session: Session, scene: GenericScene, image: string, onComplete?: (path: string) => void, imgJob?: SDAbstractJob<string>, input?: any) => void | Promise<void>;
+  handler: (
+    session: Session,
+    scene: GenericScene,
+    image: string,
+    onComplete?: (path: string) => void,
+    imgJob?: SDAbstractJob<string>,
+    input?: any,
+  ) => void | Promise<void>;
   getInput?: (session: Session) => Promise<any>;
 }
 
@@ -244,4 +281,6 @@ export const oneTimeFlows: OneTimeFlowItem[] = [
   { text: '라인아트화', handler: queueLineart },
 ];
 
-export const oneTimeFlowMap = new Map<string, OneTimeFlowItem>(oneTimeFlows.map((item) => [item.text, item]));
+export const oneTimeFlowMap = new Map<string, OneTimeFlowItem>(
+  oneTimeFlows.map((item) => [item.text, item]),
+);

@@ -59,7 +59,9 @@ export async function extractExifFromBase64(base64: string) {
   return exif;
 }
 
-export async function extractPromptDataFromBase64(base64: string): Promise<SDAbstractJob<string> | undefined> {
+export async function extractPromptDataFromBase64(
+  base64: string,
+): Promise<SDAbstractJob<string> | undefined> {
   const exif = await extractExifFromBase64(base64);
   const comment = exif['Comment'];
   if (comment && comment.value) {
@@ -78,7 +80,7 @@ export async function extractPromptDataFromBase64(base64: string): Promise<SDAbs
         dyn: data['sm_dyn'],
         smea: data['sm'],
         vibes: [],
-        backend: {type:'NAI'}
+        backend: { type: 'NAI' },
       };
     }
   }

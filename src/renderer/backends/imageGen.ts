@@ -42,7 +42,7 @@ export const upscaleReoslution = (resolution: Resolution) => {
     default:
       return resolution;
   }
-}
+};
 
 export const resolutionMap = {
   small_landscape: { height: 512, width: 768 },
@@ -63,7 +63,7 @@ export const convertResolution = (resolution: Resolution): ImageSize => {
   return {
     width: resolutionMap[resolution].width,
     height: resolutionMap[resolution].height,
-  }
+  };
 };
 
 export enum Sampling {

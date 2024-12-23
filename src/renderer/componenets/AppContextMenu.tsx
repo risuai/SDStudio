@@ -58,10 +58,7 @@ export const AppContextMenu = observer(() => {
     if (!ctx.scene) return;
     for (const path of ctx.path) {
       const tmp = path.slice(0, path.lastIndexOf('/'));
-      await backend.copyFile(
-        path,
-        tmp + '/' + Date.now().toString() + '.png',
-      );
+      await backend.copyFile(path, tmp + '/' + Date.now().toString() + '.png');
     }
     imageService.refresh(appState.curSession!, ctx.scene);
     appState.pushDialog({
@@ -122,13 +119,13 @@ export const AppContextMenu = observer(() => {
       text: '정말로 삭제하시겠습니까?',
       callback: async () => {
         await deleteImageFiles(appState.curSession!, ctx.path, ctx.scene);
-      }
+      },
     });
   };
   const transformImage = async (ctx: GallaryImageContextAlt) => {
-    const items = oneTimeFlows.map(x => ({
+    const items = oneTimeFlows.map((x) => ({
       text: x.text,
-      value: x.text
+      value: x.text,
     }));
     const menu = await appState.pushDialogAsync({
       text: '이미지 변형 방법을 선택하세요',
@@ -137,12 +134,21 @@ export const AppContextMenu = observer(() => {
     });
     if (!menu) return;
     const menuItem = oneTimeFlowMap.get(menu)!;
-    const input = menuItem.getInput ? await menuItem.getInput(appState.curSession!) : undefined;
+    const input = menuItem.getInput
+      ? await menuItem.getInput(appState.curSession!)
+      : undefined;
     for (const p of ctx.path) {
       let image = await imageService.fetchImage(p);
       image = dataUriToBase64(image!);
       const job = await extractPromptDataFromBase64(image);
-      menuItem.handler(appState.curSession!, ctx.scene!, image, undefined, job, input);
+      menuItem.handler(
+        appState.curSession!,
+        ctx.scene!,
+        image,
+        undefined,
+        job,
+        input,
+      );
     }
   };
   const handleImageItemClick = ({ id, props }: any) => {

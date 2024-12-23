@@ -213,7 +213,11 @@ export const BigPromptEditor = observer(
           <div className="flex flex-col h-full">
             <div className="flex-1 overflow-hidden">
               {image && (
-                <img className="w-full h-full object-contain" src={image} draggable={false} />
+                <img
+                  className="w-full h-full object-contain"
+                  src={image}
+                  draggable={false}
+                />
               )}
             </div>
             <div className="ml-auto flex-none flex gap-4 pt-2 mb-2 md:mb-0">
@@ -547,8 +551,10 @@ const SceneEditor = observer(({ scene, onClosed, onDeleted }: Props) => {
 
   const resolutionOptions = Object.entries(resolutionMap)
     .map(([key, value]) => {
-      const resolVal = (scene.resolutionWidth ?? '') + 'x' + (scene.resolutionHeight ?? '');
-      if (key === 'custom') return { label: '커스텀 (' + resolVal + ')', value: key };
+      const resolVal =
+        (scene.resolutionWidth ?? '') + 'x' + (scene.resolutionHeight ?? '');
+      if (key === 'custom')
+        return { label: '커스텀 (' + resolVal + ')', value: key };
       return { label: `${value.width}x${value.height}`, value: key };
     })
     .filter((x) => !x.value.startsWith('small'));
@@ -590,19 +596,24 @@ const SceneEditor = observer(({ scene, onClosed, onDeleted }: Props) => {
                   } else if (opt.value === 'custom') {
                     const width = await appState.pushDialogAsync({
                       type: 'input-confirm',
-                      text: '해상도 너비를 입력해주세요'
+                      text: '해상도 너비를 입력해주세요',
                     });
                     if (width == null) return;
                     const height = await appState.pushDialogAsync({
                       type: 'input-confirm',
-                      text: '해상도 높이를 입력해주세요'
+                      text: '해상도 높이를 입력해주세요',
                     });
                     if (height == null) return;
                     try {
-                      const customResolution = { width: parseInt(width), height: parseInt(height) };
+                      const customResolution = {
+                        width: parseInt(width),
+                        height: parseInt(height),
+                      };
                       scene.resolution = opt.value as Resolution;
-                      scene.resolutionWidth = (customResolution.width + 63) & ~63;
-                      scene.resolutionHeight = (customResolution.height + 63) & ~63;
+                      scene.resolutionWidth =
+                        (customResolution.width + 63) & ~63;
+                      scene.resolutionHeight =
+                        (customResolution.height + 63) & ~63;
                     } catch (e: any) {
                       appState.pushMessage(e.message);
                     }

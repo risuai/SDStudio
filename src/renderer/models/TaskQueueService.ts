@@ -208,11 +208,11 @@ const lowerResolution = (res: Resolution, width?: number, height?: number) => {
     return {
       width: width!,
       height: height!,
-    }
+    };
   } else {
     return convertResolution(res);
   }
-}
+};
 
 class GenerateImageTaskHandler implements TaskHandler {
   type: ImageTaskType;
@@ -275,12 +275,18 @@ class GenerateImageTaskHandler implements TaskHandler {
         strength: x.strength,
       })),
     );
-    const resol = job.overrideResolution ? job.overrideResolution : task.params.scene!.resolution as Resolution;
+    const resol = job.overrideResolution
+      ? job.overrideResolution
+      : (task.params.scene!.resolution as Resolution);
     const arg: ImageGenInput = {
       prompt: prompt,
       uc: job.uc,
       model: Model.Anime,
-      resolution: lowerResolution(resol, task.params.scene!.resolutionWidth, task.params.scene!.resolutionHeight),
+      resolution: lowerResolution(
+        resol,
+        task.params.scene!.resolutionWidth,
+        task.params.scene!.resolutionHeight,
+      ),
       sampling: job.sampling as Sampling,
       sm: job.smea,
       dyn: job.dyn,
@@ -384,15 +390,25 @@ class GenerateImageTaskHandler implements TaskHandler {
         text: '스탭 수 28개 초과',
       });
     }
-    const resolution = job.overrideResolution ? job.overrideResolution : task.params.scene.resolution;
-    if (resolution === Resolution.WallpaperLandscape || resolution === Resolution.LargeLandscape || resolution === Resolution.LargePortrait || resolution === Resolution.LargeSquare || resolution === Resolution.WallpaperPortrait) {
+    const resolution = job.overrideResolution
+      ? job.overrideResolution
+      : task.params.scene.resolution;
+    if (
+      resolution === Resolution.WallpaperLandscape ||
+      resolution === Resolution.LargeLandscape ||
+      resolution === Resolution.LargePortrait ||
+      resolution === Resolution.LargeSquare ||
+      resolution === Resolution.WallpaperPortrait
+    ) {
       res.push({
         scene: name,
         text: '씬 해상도가 큼',
       });
     } else if (resolution === Resolution.Custom) {
-      const totalPixels = (task.params.scene.resolutionWidth! * task.params.scene.resolutionHeight!) ?? 0;
-      if (totalPixels > 1024*1024) {
+      const totalPixels =
+        task.params.scene.resolutionWidth! *
+          task.params.scene.resolutionHeight! ?? 0;
+      if (totalPixels > 1024 * 1024) {
         res.push({
           scene: name,
           text: '씬 해상도가 큼',
@@ -498,7 +514,10 @@ class AugmentTaskHandler implements TaskHandler {
   }
 
   checkTask(task: Task): boolean {
-    return task.params.job.type === 'augment' && task.params.job.backend.type === 'NAI';
+    return (
+      task.params.job.type === 'augment' &&
+      task.params.job.backend.type === 'NAI'
+    );
   }
 
   getNumTries(task: Task) {
@@ -827,7 +846,15 @@ export const queueWorkflow = async (
   const prompts = await def.createPrompt!(session, scene, preset, shared);
   const scene_ = scene as Scene;
   for (const prompt of prompts) {
-    await def.handler(session, scene, prompt, preset, shared, samples, scene_.meta.get(type));
+    await def.handler(
+      session,
+      scene,
+      prompt,
+      preset,
+      shared,
+      samples,
+      scene_.meta.get(type),
+    );
   }
 };
 

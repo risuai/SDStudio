@@ -4,9 +4,17 @@ import BrushTool, {
   base64ToDataUri,
   getImageDimensions,
 } from './BrushTool';
-import { DropdownSelect, } from './UtilComponents';
+import { DropdownSelect } from './UtilComponents';
 import { Resolution, resolutionMap } from '../backends/imageGen';
-import { FaArrowAltCircleLeft, FaArrowLeft, FaArrowsAlt, FaPaintBrush, FaPlay, FaStop, FaUndo } from 'react-icons/fa';
+import {
+  FaArrowAltCircleLeft,
+  FaArrowLeft,
+  FaArrowsAlt,
+  FaPaintBrush,
+  FaPlay,
+  FaStop,
+  FaUndo,
+} from 'react-icons/fa';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import {
   isMobile,
@@ -52,8 +60,12 @@ const InPaintEditor = observer(
     const { curSession } = appState;
     const resolutionOptions = Object.entries(resolutionMap)
       .map(([key, value]) => {
-        const resolVal = (editingScene.resolutionWidth ?? '') + 'x' + (editingScene.resolutionHeight ?? '');
-        if (key === 'custom') return { label: '커스텀 (' + resolVal + ')', value: key };
+        const resolVal =
+          (editingScene.resolutionWidth ?? '') +
+          'x' +
+          (editingScene.resolutionHeight ?? '');
+        if (key === 'custom')
+          return { label: '커스텀 (' + resolVal + ')', value: key };
         return { label: `${value.width}x${value.height}`, value: key };
       })
       .filter((x) => !x.value.startsWith('small'));
@@ -101,7 +113,7 @@ const InPaintEditor = observer(
         () => editingScene.preset.image,
         () => {
           loadImage();
-        }
+        },
       );
       loadImage();
       if (def.hasMask) loadMask();
@@ -212,19 +224,24 @@ const InPaintEditor = observer(
                     } else if (opt.value === 'custom') {
                       const width = await appState.pushDialogAsync({
                         type: 'input-confirm',
-                        text: '해상도 너비를 입력해주세요'
+                        text: '해상도 너비를 입력해주세요',
                       });
                       if (width == null) return;
                       const height = await appState.pushDialogAsync({
                         type: 'input-confirm',
-                        text: '해상도 높이를 입력해주세요'
+                        text: '해상도 높이를 입력해주세요',
                       });
                       if (height == null) return;
                       try {
-                        const customResolution = { width: parseInt(width), height: parseInt(height) };
+                        const customResolution = {
+                          width: parseInt(width),
+                          height: parseInt(height),
+                        };
                         editingScene.resolution = opt.value as Resolution;
-                        editingScene.resolutionWidth = (customResolution.width + 63) & ~63;
-                        editingScene.resolutionHeight = (customResolution.height + 63) & ~63;
+                        editingScene.resolutionWidth =
+                          (customResolution.width + 63) & ~63;
+                        editingScene.resolutionHeight =
+                          (customResolution.height + 63) & ~63;
                       } catch (e: any) {
                         appState.pushMessage(e.message);
                       }
@@ -236,17 +253,24 @@ const InPaintEditor = observer(
               </div>
             </div>
           </div>
-          {open && <FloatView priority={1} onEscape={() => setOpen(false)}>
-            <InnerPreSetEditor
-              type={editingScene.workflowType}
-              preset={editingScene.preset}
-              shared={undefined}
-              element={workFlowService.getI2IEditor(editingScene.workflowType)}
-              middlePromptMode={false}
-            />
-          </FloatView>}
+          {open && (
+            <FloatView priority={1} onEscape={() => setOpen(false)}>
+              <InnerPreSetEditor
+                type={editingScene.workflowType}
+                preset={editingScene.preset}
+                shared={undefined}
+                element={workFlowService.getI2IEditor(
+                  editingScene.workflowType,
+                )}
+                middlePromptMode={false}
+              />
+            </FloatView>
+          )}
           <div className="flex-none md:hidden mb-2">
-            <button className="round-button back-sky w-full" onClick={() => setOpen(true)}>
+            <button
+              className="round-button back-sky w-full"
+              onClick={() => setOpen(true)}
+            >
               씬 세팅 열기
             </button>
           </div>
@@ -333,22 +357,38 @@ const InPaintEditor = observer(
             </TransformWrapper>
           </div>
           <div className="flex-none flex ml-auto gap-2 items-center mr-2 mt-2">
-            <button className={`round-button back-gray h-8 w-16 flex items-center justify-center`} onClick={async () => {
-              if (!image || !editingScene.preset.image) return;
-              await imageService.writeVibeImage(curSession!, editingScene.preset.image, image);
-            }}><FaArrowLeft size={20}/></button>
+            <button
+              className={`round-button back-gray h-8 w-16 flex items-center justify-center`}
+              onClick={async () => {
+                if (!image || !editingScene.preset.image) return;
+                await imageService.writeVibeImage(
+                  curSession!,
+                  editingScene.preset.image,
+                  image,
+                );
+              }}
+            >
+              <FaArrowLeft size={20} />
+            </button>
             <TaskProgressBar fast />
             {!taskQueueService.isRunning() ? (
               <button
                 className={`round-button back-green h-8 w-16 md:w-36 flex items-center justify-center`}
                 onClick={async () => {
                   await saveMask();
-                  await queueI2IWorkflow(curSession!, editingScene.workflowType, editingScene.preset, editingScene, 1, (path: string) => {
-                    (async () => {
-                      const data = await imageService.fetchImage(path);
-                      setImage(dataUriToBase64(data!));
-                    })();
-                  });
+                  await queueI2IWorkflow(
+                    curSession!,
+                    editingScene.workflowType,
+                    editingScene.preset,
+                    editingScene,
+                    1,
+                    (path: string) => {
+                      (async () => {
+                        const data = await imageService.fetchImage(path);
+                        setImage(dataUriToBase64(data!));
+                      })();
+                    },
+                  );
                   taskQueueService.run();
                 }}
               >

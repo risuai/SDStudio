@@ -60,7 +60,8 @@ import { StackFixed, StackGrow, VerticalStack } from './LayoutComponents';
 
 const ImageSelect = observer(({ input }: { input: WFIInlineInput }) => {
   const { curSession } = appState;
-  const { type, preset, shared, meta, editVibe } = useContext(WFElementContext)!;
+  const { type, preset, shared, meta, editVibe } =
+    useContext(WFElementContext)!;
   const getField = () => {
     if (input.fieldType === 'preset') return preset[input.field];
     if (input.fieldType === 'shared') return shared[input.field];
@@ -131,7 +132,14 @@ const VibeImage = ({
   }, [path]);
   return (
     <>
-      {image && <img className={className} src={image} onClick={onClick} draggable={false} />}
+      {image && (
+        <img
+          className={className}
+          src={image}
+          onClick={onClick}
+          draggable={false}
+        />
+      )}
       {!image && <div className={className} onClick={onClick}></div>}
     </>
   );
@@ -159,7 +167,9 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
   const vibeChange = async (vibe: string) => {
     if (!vibe) return;
     const path = await imageService.storeVibeImage(curSession!, vibe);
-    getField().push(VibeItem.fromJSON({ path: path, info: 1.0, strength: 0.6 }));
+    getField().push(
+      VibeItem.fromJSON({ path: path, info: 1.0, strength: 0.6 }),
+    );
   };
 
   return (
@@ -170,7 +180,10 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
             {getField().map((vibe: VibeItem) => (
               <div className="border border-gray-300 mt-2 p-2 flex gap-2 items-begin">
                 <VibeImage
-                  path={vibe.path && imageService.getVibeImagePath(curSession!, vibe.path)}
+                  path={
+                    vibe.path &&
+                    imageService.getVibeImagePath(curSession!, vibe.path)
+                  }
                   className="flex-none w-28 h-28 object-cover"
                 />
                 <div className="flex flex-col gap-2 w-full">
@@ -290,7 +303,10 @@ export const VibeButton = ({ input }: { input: WFIInlineInput }) => {
         <div className="w-full flex items-center mt-2">
           <div className={'flex-none mr-2 gray-label'}>바이브 설정:</div>
           <VibeImage
-            path={imageService.getVibeImagePath(appState.curSession!, getField()[0].path)}
+            path={imageService.getVibeImagePath(
+              appState.curSession!,
+              getField()[0].path,
+            )}
             className="flex-1 h-14 rounded-xl object-cover cursor-pointer hover:brightness-95 active:brightness-90"
             onClick={onClick}
           />
@@ -732,7 +748,7 @@ const PreSetSelect = observer(({ workflowType }: { workflowType: string }) => {
                   }}
                   className="p-2 mx-1 icon-button bg-orange-500"
                 >
-                  <FaShare/>
+                  <FaShare />
                 </button>
                 <button
                   onClick={() => {
@@ -864,11 +880,12 @@ const WFRSceneOnly = observer(({ element }: WFElementProps) => {
   if (!meta) {
     return <></>;
   }
-  return <WFRenderElement element={input.element}/>;
+  return <WFRenderElement element={input.element} />;
 });
 
 const WFRIfIn = observer(({ element }: WFElementProps) => {
-  const { type, shared, preset, meta, showGroup, editVibe } = useContext(WFElementContext)!;
+  const { type, shared, preset, meta, showGroup, editVibe } =
+    useContext(WFElementContext)!;
   const { curGroup } = useContext(WFGroupContext)!;
   const input = element as WFIIfIn;
   const getField = () => {
@@ -880,14 +897,15 @@ const WFRIfIn = observer(({ element }: WFElementProps) => {
     return <></>;
   }
   if (!input.values.includes(getField())) {
-    return <></>
+    return <></>;
   }
-  return <WFRenderElement element={input.element}/>;
+  return <WFRenderElement element={input.element} />;
 });
 
 const WFRShowImage = observer(({ element }: WFElementProps) => {
   const curSession = appState.curSession;
-  const { type, meta, preset, shared, editVibe, showGroup } = useContext(WFElementContext)!;
+  const { type, meta, preset, shared, editVibe, showGroup } =
+    useContext(WFElementContext)!;
   const { curGroup } = useContext(WFGroupContext)!;
   const input = element as WFIShowImage;
   const getField = () => {
@@ -900,8 +918,12 @@ const WFRShowImage = observer(({ element }: WFElementProps) => {
   }
   return (
     <div className="mt-2">
-      {getField() && <VibeImage path={imageService.getVibeImagePath(curSession!, getField())}
-          className="flex-none w-40 h-40 object-cover"/>}
+      {getField() && (
+        <VibeImage
+          path={imageService.getVibeImagePath(curSession!, getField())}
+          className="flex-none w-40 h-40 object-cover"
+        />
+      )}
     </div>
   );
 });
@@ -1049,20 +1071,23 @@ const WFRInline = observer(({ element }: WFElementProps) => {
         </EditorField>
       );
     case 'select':
-      return <InlineEditorField label={input.label}>
-        <DropdownSelect
-          key={key}
-          selectedOption={getField()}
-          disabled={false}
-          menuPlacement={input.menuPlacement}
-          options={field.options.map((x) => ({
-            label: x.label,
-            value: x.value,
-          }))}
-          onSelect={(opt) => {
-            setField(opt.value);
-          }}/>
-      </InlineEditorField>
+      return (
+        <InlineEditorField label={input.label}>
+          <DropdownSelect
+            key={key}
+            selectedOption={getField()}
+            disabled={false}
+            menuPlacement={input.menuPlacement}
+            options={field.options.map((x) => ({
+              label: x.label,
+              value: x.value,
+            }))}
+            onSelect={(opt) => {
+              setField(opt.value);
+            }}
+          />
+        </InlineEditorField>
+      );
     case 'nullInt':
       return (
         <InlineEditorField label={input.label}>
@@ -1259,7 +1284,12 @@ interface Props {
 }
 
 const PreSetEditor = observer(
-  ({ middlePromptMode, getMiddlePrompt, onMiddlePromptChange, meta }: Props) => {
+  ({
+    middlePromptMode,
+    getMiddlePrompt,
+    onMiddlePromptChange,
+    meta,
+  }: Props) => {
     const [_, rerender] = useState<{}>({});
     const curSession = appState.curSession!;
     const workflowType = curSession.selectedWorkflow?.workflowType;

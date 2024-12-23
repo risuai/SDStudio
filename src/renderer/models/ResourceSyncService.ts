@@ -34,7 +34,7 @@ export abstract class ResourceSyncService<
 
   abstract createDefault(name: string): T | Promise<T>;
   abstract getHook(rc: T, name: string): Promise<void>;
-  abstract migrate(rc: any): any| Promise<any>;
+  abstract migrate(rc: any): any | Promise<any>;
 
   async add(name: string) {
     if (name in this.resources) {

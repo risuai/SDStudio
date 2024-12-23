@@ -1,5 +1,10 @@
 import { AugmentDef, AugmentGenDef } from './AugmentWorkFlow';
-import { SDI2IDef, SDImageGenDef, SDImageGenEasyDef, SDInpaintDef } from './SDWorkFlow';
+import {
+  SDI2IDef,
+  SDImageGenDef,
+  SDImageGenEasyDef,
+  SDInpaintDef,
+} from './SDWorkFlow';
 import {
   WorkFlowCategoryFlag as WFF,
   WorkFlowService,

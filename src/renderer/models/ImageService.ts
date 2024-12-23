@@ -172,12 +172,14 @@ export class ImageService extends EventTarget {
   }
 
   async fetchVibeImage(session: Session, name: string) {
-    const path = imageService.getVibesDir(session) + '/' + name.split('/').pop()!;
+    const path =
+      imageService.getVibesDir(session) + '/' + name.split('/').pop()!;
     return await this.fetchImage(path);
   }
 
   async writeVibeImage(session: Session, name: string, data: string) {
-    const path = imageService.getVibesDir(session) + '/' + name.split('/').pop()!;
+    const path =
+      imageService.getVibesDir(session) + '/' + name.split('/').pop()!;
     await backend.writeDataFile(path, data);
     await imageService.invalidateCache(path);
   }
@@ -505,7 +507,7 @@ export const deleteImageFiles = async (
   for (const path of paths) {
     try {
       await backend.trashFile(path);
-    } catch(e) {}
+    } catch (e) {}
     await imageService.invalidateCache(path);
   }
   if (scene) {

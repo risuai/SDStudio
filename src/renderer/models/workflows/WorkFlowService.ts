@@ -126,7 +126,7 @@ export class WorkFlowService {
     type: string,
     job: SDAbstractJob<string>,
     image?: string,
-    mask?: string
+    mask?: string,
   ) {
     const wf = this.workflows.get(type);
     if (!wf) {

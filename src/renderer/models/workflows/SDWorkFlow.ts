@@ -56,7 +56,12 @@ const SDImageGenUI = wfiStack([
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
-    wfiInlineInput('프롬프트 가이던스', 'promptGuidance', 'preset', 'flex-none'),
+    wfiInlineInput(
+      '프롬프트 가이던스',
+      'promptGuidance',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
@@ -89,7 +94,12 @@ const SDImageGenEasyInnerUI = wfiStack([
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
-    wfiInlineInput('프롬프트 가이던스', 'promptGuidance', 'preset', 'flex-none'),
+    wfiInlineInput(
+      '프롬프트 가이던스',
+      'promptGuidance',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
@@ -190,13 +200,23 @@ const SDInpaintPreset = new WFVarBuilder()
 const SDInpaintUI = wfiStack([
   wfiInlineInput('이미지', 'image', 'preset', 'flex-none'),
   wfiInlineInput('인페인트 강도', 'strength', 'preset', 'flex-none'),
-  wfiInlineInput('비마스크 영역 편집 방지', 'originalImage', 'preset', 'flex-none'),
+  wfiInlineInput(
+    '비마스크 영역 편집 방지',
+    'originalImage',
+    'preset',
+    'flex-none',
+  ),
   wfiInlineInput('프롬프트', 'prompt', 'preset', 'flex-1'),
   wfiInlineInput('네거티브 프롬프트', 'uc', 'preset', 'flex-1'),
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
-    wfiInlineInput('프롬프트 가이던스', 'promptGuidance', 'preset', 'flex-none'),
+    wfiInlineInput(
+      '프롬프트 가이던스',
+      'promptGuidance',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
@@ -218,13 +238,16 @@ const createSDI2IHandler = (type: string) => {
     meta?: any,
     onComplete?: (img: string) => void,
   ) => {
-    const image = preset.image.endsWith('.png') ? dataUriToBase64(
-      (await imageService.fetchVibeImage(session, preset.image))!,
-    ) : preset.image;
+    const image = preset.image.endsWith('.png')
+      ? dataUriToBase64(
+          (await imageService.fetchVibeImage(session, preset.image))!,
+        )
+      : preset.image;
     const isInpaint = type === 'SDInpaint';
-    const getMask = async () => dataUriToBase64(
-      (await imageService.fetchVibeImage(session, preset.mask))!,
-    );
+    const getMask = async () =>
+      dataUriToBase64(
+        (await imageService.fetchVibeImage(session, preset.mask))!,
+      );
     const job: SDInpaintJob | SDI2IJob = {
       type: isInpaint ? 'sd_inpaint' : 'sd_i2i',
       cfgRescale: preset.cfgRescale,
@@ -302,7 +325,12 @@ const SDI2IUI = wfiStack([
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
-    wfiInlineInput('프롬프트 가이던스', 'promptGuidance', 'preset', 'flex-none'),
+    wfiInlineInput(
+      '프롬프트 가이던스',
+      'promptGuidance',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),

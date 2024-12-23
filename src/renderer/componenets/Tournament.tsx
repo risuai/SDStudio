@@ -291,7 +291,10 @@ const Tournament = observer(({ scene, path }: TournamentProps) => {
                     props: {
                       ctx: {
                         type: 'image',
-                        path: imageService.getOutputDir(curSession!, scene) + '/' + players[0],
+                        path:
+                          imageService.getOutputDir(curSession!, scene) +
+                          '/' +
+                          players[0],
                       },
                     },
                   });
@@ -319,7 +322,10 @@ const Tournament = observer(({ scene, path }: TournamentProps) => {
                     props: {
                       ctx: {
                         type: 'image',
-                        path: imageService.getOutputDir(curSession!, scene) + '/' + players[1],
+                        path:
+                          imageService.getOutputDir(curSession!, scene) +
+                          '/' +
+                          players[1],
                       },
                     },
                   });

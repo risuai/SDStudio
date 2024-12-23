@@ -33,15 +33,18 @@ export class SessionService extends ResourceSyncService<Session> {
   }
 
   async migrate(rc: any) {
-    if (!rc.version)  {
-      await backend.writeFile('projects/' + rc.name + '.json.bak', JSON.stringify(rc));
+    if (!rc.version) {
+      await backend.writeFile(
+        'projects/' + rc.name + '.json.bak',
+        JSON.stringify(rc),
+      );
       rc = await legacy.migrateSession(rc);
     }
     if (Array.isArray(rc.presets)) {
       await legacy.recoverSession(rc);
     }
     await this.migrateSession(rc);
-    console.log("migrated", rc);
+    console.log('migrated', rc);
     return rc;
   }
 
@@ -98,11 +101,14 @@ export class SessionService extends ResourceSyncService<Session> {
     }
     sess.inpaints = {};
 
-    for (const presetSet of Object.values(sess.presets)){
+    for (const presetSet of Object.values(sess.presets)) {
       for (const preset of presetSet) {
         if (preset.profile) {
           try {
-            const data = (await imageService.fetchVibeImage(session, preset.profile))!;
+            const data = (await imageService.fetchVibeImage(
+              session,
+              preset.profile,
+            ))!;
             const base64 = dataUriToBase64(data);
             preset.profile = base64;
           } catch (e) {}
@@ -194,18 +200,18 @@ export class SessionService extends ResourceSyncService<Session> {
             const path = 'vibes/' + name + '/' + v4() + '.png';
             await backend.writeDataFile(path, preset.profile);
             preset.profile = path.split('/').pop()!;
-          } catch(e){}
+          } catch (e) {}
         }
       }
     } else if (session.presets) {
-      for (const presetSet of Object.values(session.presets)){
+      for (const presetSet of Object.values(session.presets)) {
         for (const preset of presetSet) {
           if (preset.profile) {
             try {
               const path = 'vibes/' + name + '/' + v4() + '.png';
               await backend.writeDataFile(path, preset.profile);
               preset.profile = path.split('/').pop()!;
-            } catch(e){}
+            } catch (e) {}
           }
         }
       }
@@ -374,7 +380,7 @@ export async function importPreset(session: Session, base64: string) {
   }
   if (json.type === 'style') {
     const newJson: any = {};
-    newJson.type = 'SDImageGenEasy'
+    newJson.type = 'SDImageGenEasy';
     newJson.name = json.name;
     newJson.profile = json.profile;
     newJson.dyn = !!json.dynOn;
@@ -422,7 +428,7 @@ export function createImageWithText(
   fontSize: number = 30,
   fontFamily: string = 'Arial',
   textColor: string = 'black',
-  backgroundColor: string = 'white'
+  backgroundColor: string = 'white',
 ) {
   const canvas: HTMLCanvasElement = document.createElement('canvas');
   canvas.width = width;

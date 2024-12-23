@@ -21,11 +21,7 @@ import ConfirmWindow, { Dialog } from './ConfirmWindow';
 import QueueControl from './SceneQueueControl';
 import { FloatView, FloatViewProvider } from './FloatView';
 import { observer, useObserver } from 'mobx-react-lite';
-import {
-  FaImages,
-  FaPenFancy,
-  FaPuzzlePiece,
-} from 'react-icons/fa';
+import { FaImages, FaPenFancy, FaPuzzlePiece } from 'react-icons/fa';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
@@ -279,10 +275,21 @@ export const App = observer(() => {
         >
           <FloatViewProvider>
             <AppContextMenu />
-            {appState.externalImage && <FloatView onEscape={()=>{appState.closeExternalImage()}} priority={1}>
-              <ExternalImageView image={appState.externalImage} onClose={()=>{appState.closeExternalImage()}}/>
+            {appState.externalImage && (
+              <FloatView
+                onEscape={() => {
+                  appState.closeExternalImage();
+                }}
+                priority={1}
+              >
+                <ExternalImageView
+                  image={appState.externalImage}
+                  onClose={() => {
+                    appState.closeExternalImage();
+                  }}
+                />
               </FloatView>
-            }
+            )}
             <VerticalStack>
               <StackFixed>
                 <TobBar />
@@ -291,7 +298,10 @@ export const App = observer(() => {
                 {appState.curSession && (
                   <>
                     <StackGrow outerClassName="hidden md:block">
-                      <PreSetEditor key={appState.curSession.name} middlePromptMode={false} />
+                      <PreSetEditor
+                        key={appState.curSession.name}
+                        middlePromptMode={false}
+                      />
                     </StackGrow>
                     <StackGrow>
                       <TabComponent

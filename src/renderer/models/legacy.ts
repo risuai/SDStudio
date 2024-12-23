@@ -1,27 +1,37 @@
-import { v4 } from "uuid";
-import { backend, imageService, sessionService } from ".";
-import { dataUriToBase64 } from "./ImageService";
-import ExifReader from "exifreader";
-import defaultassets from "../defaultassets";
-import extractChunks from "png-chunks-extract";
-import { IInpaintScene, IPieceLibrary, IPromptPiece, IScene, ISession, IVibeItem, Round } from "./types";
+import { v4 } from 'uuid';
+import { backend, imageService, sessionService } from '.';
+import { dataUriToBase64 } from './ImageService';
+import ExifReader from 'exifreader';
+import defaultassets from '../defaultassets';
+import extractChunks from 'png-chunks-extract';
+import {
+  IInpaintScene,
+  IPieceLibrary,
+  IPromptPiece,
+  IScene,
+  ISession,
+  IVibeItem,
+  Round,
+} from './types';
 import { Buffer } from 'buffer';
-import { appState } from "./AppService";
+import { appState } from './AppService';
 
 export const defaultUC = `worst quality, bad quality, displeasing, very displeasing, lowres, bad anatomy, bad perspective, bad proportions, bad aspect ratio, bad face, long face, bad teeth, bad neck, long neck, bad arm, bad hands, bad ass, bad leg, bad feet, bad reflection, bad shadow, bad link, bad source, wrong hand, wrong feet, missing limb, missing eye, missing tooth, missing ear, missing finger, extra faces, extra eyes, extra eyebrows, extra mouth, extra tongue, extra teeth, extra ears, extra breasts, extra arms, extra hands, extra legs, extra digits, fewer digits, cropped head, cropped torso, cropped shoulders, cropped arms, cropped legs, mutation, deformed, disfigured, unfinished, chromatic aberration, text, error, jpeg artifacts, watermark, scan, scan artifacts`;
 
 function readJSONFromPNG(base64PNG: string) {
   const buffer = Buffer.from(base64PNG, 'base64');
   const chunks = extractChunks(buffer);
-  const jsonChunk = chunks.find(chunk => chunk.name === 'tEXt');
+  const jsonChunk = chunks.find((chunk) => chunk.name === 'tEXt');
   if (jsonChunk) {
-      let base64JsonData = Buffer.from(jsonChunk.data).toString();
-      const startIndex = base64JsonData.indexOf('json:') + 5
-      base64JsonData = base64JsonData.slice(startIndex);
-      const jsonData = JSON.parse(Buffer.from(base64JsonData, 'base64').toString());
-      return jsonData;
+    let base64JsonData = Buffer.from(jsonChunk.data).toString();
+    const startIndex = base64JsonData.indexOf('json:') + 5;
+    base64JsonData = base64JsonData.slice(startIndex);
+    const jsonData = JSON.parse(
+      Buffer.from(base64JsonData, 'base64').toString(),
+    );
+    return jsonData;
   } else {
-      throw new Error('No JSON data found in the PNG.');
+    throw new Error('No JSON data found in the PNG.');
   }
 }
 
@@ -45,7 +55,7 @@ async function importStyle(session: any, base64: string) {
   return preset;
 }
 
-function blobToDataUri(blob: Blob) : Promise<string> {
+function blobToDataUri(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result as string);
@@ -55,7 +65,9 @@ function blobToDataUri(blob: Blob) : Promise<string> {
 }
 
 async function importDefaultPresets(session: any) {
-  const images = await Promise.all(defaultassets.map(x=>fetch(x).then(res=>res.blob())));
+  const images = await Promise.all(
+    defaultassets.map((x) => fetch(x).then((res) => res.blob())),
+  );
   for (const image of images) {
     const datauri = await blobToDataUri(image);
     await importStyle(session, dataUriToBase64(datauri));
@@ -63,9 +75,7 @@ async function importDefaultPresets(session: any) {
 }
 
 function getInpaintOrgPath(session: any, inpaint: any) {
-  return (
-    'inpaint_orgs/' + session.name + '/' + inpaint.name + '.png'
-  );
+  return 'inpaint_orgs/' + session.name + '/' + inpaint.name + '.png';
 }
 
 function base64ToArrayBuffer(base64: string) {
@@ -92,10 +102,17 @@ async function extractPromptDataFromBase64(base64: string) {
   if (comment && comment.value) {
     const data = JSON.parse(comment.value as string);
     if (data['prompt']) {
-      return [data['prompt'], data['seed'], data['scale'], data['sampler'], data['steps'], data['uc']];
+      return [
+        data['prompt'],
+        data['seed'],
+        data['scale'],
+        data['sampler'],
+        data['steps'],
+        data['uc'],
+      ];
     }
   }
-  throw new Error("No prompt data found");
+  throw new Error('No prompt data found');
 }
 
 async function migrateSessionLegacy(session: any) {
@@ -115,8 +132,7 @@ async function migrateSessionLegacy(session: any) {
     for (const preset of Object.values(session.presets)) {
       for (const vibe of (preset as any).vibes) {
         if ((vibe as any).image) {
-          const path =
-            imageService.getVibesDir(session) + '/' + v4() + '.png';
+          const path = imageService.getVibesDir(session) + '/' + v4() + '.png';
           await backend.writeDataFile(path, (vibe as any).image);
           vibe.path = path;
           (vibe as any).image = undefined;
@@ -186,9 +202,7 @@ async function migrateSessionLegacy(session: any) {
       inpaint.prompt = '';
       try {
         const image = dataUriToBase64(
-          (await imageService.fetchImage(
-            getInpaintOrgPath(session, inpaint),
-          ))!,
+          (await imageService.fetchImage(getInpaintOrgPath(session, inpaint)))!,
         );
         const [prompt, seed, scale, sampler, steps, uc] =
           await extractPromptDataFromBase64(image);
@@ -202,9 +216,7 @@ async function migrateSessionLegacy(session: any) {
       inpaint.uc = '';
       try {
         const image = dataUriToBase64(
-          (await imageService.fetchImage(
-            getInpaintOrgPath(session, inpaint),
-          ))!,
+          (await imageService.fetchImage(getInpaintOrgPath(session, inpaint)))!,
         );
         const [prompt, seed, scale, sampler, steps, uc] =
           await extractPromptDataFromBase64(image);
@@ -367,7 +379,6 @@ function migratePreset(preset: any): any {
   };
 }
 
-
 function migrateRound(round: any): Round | undefined {
   if (!round) {
     return undefined;
@@ -377,9 +388,9 @@ function migrateRound(round: any): Round | undefined {
   }
   return {
     curPlayer: round.curPlayer,
-    players: round.players.map((player: any) => (player.path)),
+    players: round.players.map((player: any) => player.path),
     winMask: round.winMask,
-  }
+  };
 }
 
 function migrateScene(scene: any): IScene {
@@ -387,7 +398,7 @@ function migrateScene(scene: any): IScene {
     type: 'scene',
     name: scene.name,
     resolution: scene.resolution,
-    slots: scene.slots.map((slot:any) => slot.map(migratePromptPiece)),
+    slots: scene.slots.map((slot: any) => slot.map(migratePromptPiece)),
     game: scene.game,
     meta: {},
     round: migrateRound(scene.round),
@@ -396,19 +407,24 @@ function migrateScene(scene: any): IScene {
   };
 }
 
-async function migrateInpaintScene(session: any, inpaint: any): Promise<IInpaintScene> {
-  const imagePath = 'inpaint_orgs/' + session.name + '/' + inpaint.name + '.png';
-  const maskPath = 'inpaint_masks/' + session.name + '/' + inpaint.name + '.png';
+async function migrateInpaintScene(
+  session: any,
+  inpaint: any,
+): Promise<IInpaintScene> {
+  const imagePath =
+    'inpaint_orgs/' + session.name + '/' + inpaint.name + '.png';
+  const maskPath =
+    'inpaint_masks/' + session.name + '/' + inpaint.name + '.png';
   let image = '';
   let mask = '';
   try {
     image = dataUriToBase64((await imageService.fetchImage(imagePath))!);
     image = await imageService.storeVibeImage(session, image);
-  } catch(e) {}
+  } catch (e) {}
   try {
     mask = dataUriToBase64((await imageService.fetchImage(maskPath))!);
     mask = await imageService.storeVibeImage(session, mask);
-  } catch(e) {}
+  } catch (e) {}
   return {
     type: 'inpaint',
     name: inpaint.name,
@@ -498,6 +514,6 @@ export function recoverSession(session: any) {
   }
   appState.pushDialog({
     type: 'yes-only',
-    text: '구버전 SD 스튜디오로 프로젝트를 열어서 손상된 부분을 복구했습니다'
-  })
+    text: '구버전 SD 스튜디오로 프로젝트를 열어서 손상된 부분을 복구했습니다',
+  });
 }

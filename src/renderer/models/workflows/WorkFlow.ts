@@ -49,7 +49,7 @@ export type WFCreatePrompt = (
 export type WFCreatePreset = (
   job: SDAbstractJob<string>,
   image?: string,
-  mask?: string
+  mask?: string,
 ) => any;
 
 export interface WFAbstractVar {
@@ -398,7 +398,11 @@ export class WFVarBuilder {
     return this;
   }
 
-  addSelectVar(name: string, options: WFSelectItem[], defaultValue: string): this {
+  addSelectVar(
+    name: string,
+    options: WFSelectItem[],
+    defaultValue: string,
+  ): this {
     this.vars.push({
       type: 'select',
       name,
@@ -488,7 +492,14 @@ export function wfiInlineInput(
   flex: WFIFlex,
   menuPlacment?: 'top' | 'bottom',
 ): WFIInlineInput {
-  return { type: 'inline', label, field, fieldType, flex, menuPlacement: menuPlacment };
+  return {
+    type: 'inline',
+    label,
+    field,
+    fieldType,
+    flex,
+    menuPlacement: menuPlacment,
+  };
 }
 
 export function wfiGroup(label: string, inputs: WFIElement[]): WFIGroup {

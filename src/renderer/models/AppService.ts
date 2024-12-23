@@ -10,7 +10,11 @@ import {
 } from '.';
 import { Dialog } from '../componenets/ConfirmWindow';
 import { dataUriToBase64, deleteImageFiles } from './ImageService';
-import { createImageWithText, embedJSONInPNG, importPreset } from './SessionService';
+import {
+  createImageWithText,
+  embedJSONInPNG,
+  importPreset,
+} from './SessionService';
 import { action, observable } from 'mobx';
 import {
   GenericScene,
@@ -28,7 +32,11 @@ import { v4 } from 'uuid';
 import { Resolution, resolutionMap } from '../backends/imageGen';
 import { ProgressDialog } from '../componenets/ProgressWindow';
 import { migratePieceLibrary } from './legacy';
-import { oneTimeFlowMap, oneTimeFlows, queueRemoveBg } from './workflows/OneTimeFlows';
+import {
+  oneTimeFlowMap,
+  oneTimeFlows,
+  queueRemoveBg,
+} from './workflows/OneTimeFlows';
 
 export interface SceneSelectorItem {
   type: 'scene' | 'inpaint';
@@ -132,7 +140,10 @@ export class AppState {
         const importCool = async () => {
           const sess = await sessionService.get(json.name);
           if (!sess) {
-            await sessionService.importSessionShallow(json as ISession, json.name);
+            await sessionService.importSessionShallow(
+              json as ISession,
+              json.name,
+            );
             const newSession = (await sessionService.get(json.name))!;
             this.curSession = newSession;
             this.pushDialog({
@@ -148,7 +159,10 @@ export class AppState {
                   return;
                 }
                 try {
-                  await sessionService.importSessionShallow(json as ISession, value);
+                  await sessionService.importSessionShallow(
+                    json as ISession,
+                    value,
+                  );
                   const newSession = (await sessionService.get(value))!;
                   this.curSession = newSession;
                 } catch (e) {
@@ -182,10 +196,12 @@ export class AppState {
                 const newJson: ISession = await sessionService.migrate(json);
                 for (const key of Object.keys(newJson.scenes)) {
                   if (cur.scenes.has(key)) {
-                    cur.scenes.get(key)!.slots = newJson.scenes[key].slots.map((slot:any) =>
-                      slot.map((piece:any) => PromptPiece.fromJSON(piece)),
+                    cur.scenes.get(key)!.slots = newJson.scenes[key].slots.map(
+                      (slot: any) =>
+                        slot.map((piece: any) => PromptPiece.fromJSON(piece)),
                     );
-                    cur.scenes.get(key)!.resolution = newJson.scenes[key].resolution;
+                    cur.scenes.get(key)!.resolution =
+                      newJson.scenes[key].resolution;
                   } else {
                     const scene = newJson.scenes[key];
                     cur.scenes.set(key, Scene.fromJSON(scene));
@@ -514,10 +530,12 @@ export class AppState {
     }
   }
 
-  async exportPreset(session: Session, preset: any){
+  async exportPreset(session: Session, preset: any) {
     let pngData;
     if (preset.profile) {
-      pngData = dataUriToBase64((await imageService.fetchVibeImage(session, preset.profile))!);
+      pngData = dataUriToBase64(
+        (await imageService.fetchVibeImage(session, preset.profile))!,
+      );
     } else {
       pngData = await createImageWithText(832, 1216, preset.name);
     }
@@ -730,9 +748,9 @@ export class AppState {
       } else if (value === 'export') {
         this.exportPackage(type, selected);
       } else if (value === 'transform') {
-        const items = oneTimeFlows.map(x => ({
+        const items = oneTimeFlows.map((x) => ({
           text: x.text,
-          value: x.text
+          value: x.text,
         }));
         const menu = await appState.pushDialogAsync({
           text: '이미지 변형 방법을 선택하세요',
@@ -741,14 +759,26 @@ export class AppState {
         });
         if (!menu) return;
         const menuItem = oneTimeFlowMap.get(menu)!;
-        const input = menuItem.getInput ? await menuItem.getInput(this.curSession!) : undefined;
+        const input = menuItem.getInput
+          ? await menuItem.getInput(this.curSession!)
+          : undefined;
         for (const scene of selected) {
           for (let path of scene.mains) {
-            path = imageService.getOutputDir(this.curSession!, scene) + '/' + path;
+            path =
+              imageService.getOutputDir(this.curSession!, scene) + '/' + path;
             let image = await imageService.fetchImage(path);
             image = dataUriToBase64(image!);
             const job = await extractPromptDataFromBase64(image);
-            oneTimeFlowMap.get(menu)!.handler(appState.curSession!, scene, image, undefined, job, input);
+            oneTimeFlowMap
+              .get(menu)!
+              .handler(
+                appState.curSession!,
+                scene,
+                image,
+                undefined,
+                job,
+                input,
+              );
           }
         }
       } else {

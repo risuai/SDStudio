@@ -110,15 +110,15 @@ export class NovelAiImageGenService implements ImageGenService {
     const seed = params.seed ?? this.getRandomInt(1, 2100000000);
     let action = undefined;
     switch (params.model) {
-    case Model.Anime:
-      action = 'generate';
-      break;
-    case Model.Inpaint:
-      action = 'infill';
-      break;
-    case Model.I2I:
-      action = 'img2img'
-      break;
+      case Model.Anime:
+        action = 'generate';
+        break;
+      case Model.Inpaint:
+        action = 'infill';
+        break;
+      case Model.I2I:
+        action = 'img2img';
+        break;
     }
     const url = this.apiEndpoint;
     const body: any = {
@@ -175,22 +175,24 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.sm = false;
       body.parameters.sm_dyn = false;
       if (params.sampling === Sampling.DDIM) {
-        body.parameters.sampler = this.translateSampling(Sampling.KEulerAncestral);
+        body.parameters.sampler = this.translateSampling(
+          Sampling.KEulerAncestral,
+        );
       }
     }
     if (params.model === Model.Anime) {
-      body.parameters.params_version = 3
-      body.parameters.add_original_image = true
-      body.parameters.characterPrompts = []
-      body.parameters.legacy = false
-      body.parameters.legacy_v3_extend = false
-      body.parameters.prefer_brownian = true
-      body.parameters.ucPreset = 0
-      body.parameters.use_coords = false
-      body.parameters.sm = undefined
-      body.parameters.sm_dyn = undefined
-      body.parameters.enable_hr = undefined
-      body.parameters.enable_AD = undefined
+      body.parameters.params_version = 3;
+      body.parameters.add_original_image = true;
+      body.parameters.characterPrompts = [];
+      body.parameters.legacy = false;
+      body.parameters.legacy_v3_extend = false;
+      body.parameters.prefer_brownian = true;
+      body.parameters.ucPreset = 0;
+      body.parameters.use_coords = false;
+      body.parameters.sm = undefined;
+      body.parameters.sm_dyn = undefined;
+      body.parameters.enable_hr = undefined;
+      body.parameters.enable_AD = undefined;
 
       body.parameters.v4_prompt = {
         caption: {
@@ -199,13 +201,13 @@ export class NovelAiImageGenService implements ImageGenService {
         },
         use_coords: false,
         use_order: false,
-      }
+      };
       body.parameters.v4_negative_prompt = {
         caption: {
           base_caption: params.uc,
           char_captions: [],
-        }
-      }
+        },
+      };
     }
 
     const headers = {
@@ -247,7 +249,7 @@ export class NovelAiImageGenService implements ImageGenService {
 
   async augmentImage(authorization: string, params: ImageAugmentInput) {
     const url = this.apiEndpoint;
-    const {width, height} = await getImageDimensions(params.image);
+    const { width, height } = await getImageDimensions(params.image);
     const body: any = {
       image: params.image,
       prompt: params.prompt,
@@ -280,7 +282,7 @@ export class NovelAiImageGenService implements ImageGenService {
       throw new Error('No entries found in the ZIP file');
     }
 
-    const imageEntry = zip.file(zipEntries[zipEntries.length-1])!;
+    const imageEntry = zip.file(zipEntries[zipEntries.length - 1])!;
     return await imageEntry.async('base64');
   }
 }

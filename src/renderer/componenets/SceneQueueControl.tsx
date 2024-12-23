@@ -164,7 +164,7 @@ export const SceneCell = observer(
             scene.preset,
             scene,
             appState.samples,
-          )
+          );
         }
       } catch (e: any) {
         appState.pushMessage('프롬프트 에러: ' + e.message);
@@ -214,7 +214,10 @@ export const SceneCell = observer(
       return () => {
         gameService.removeEventListener('updated', refreshImage);
         taskQueueService.removeEventListener('progress', onUpdate);
-        imageService.removeEventListener('image-cache-invalidated', refreshImage);
+        imageService.removeEventListener(
+          'image-cache-invalidated',
+          refreshImage,
+        );
         dispose();
         dispose2();
       };
@@ -256,7 +259,10 @@ export const SceneCell = observer(
           <div
             className={'p-2 flex text-lg text-default ' + cellSizes3[cellSize]}
           >
-            <div className="truncate flex-1">{emoji}{scene.name}</div>
+            <div className="truncate flex-1">
+              {emoji}
+              {scene.name}
+            </div>
             <div className="flex-none text-gray-400">
               {gameService.getOutputs(curSession!, scene).length}{' '}
             </div>
@@ -363,7 +369,7 @@ const QueueControl = observer(
               scene.workflowType,
               scene.preset,
               scene,
-              appState.samples
+              appState.samples,
             );
           }
         }
@@ -402,8 +408,8 @@ const QueueControl = observer(
                 type: 'select',
                 text: '이미지 변형 방법을 선택해주세요',
                 items: workFlowService.i2iFlows.map((x) => ({
-                  text: (x.def.emoji??'')+x.def.title,
-                  value: x.getType()
+                  text: (x.def.emoji ?? '') + x.def.title,
+                  value: x.getType(),
                 })),
               });
               if (!menu) return;
@@ -456,7 +462,12 @@ const QueueControl = observer(
       },
     };
 
-    const createInpaintScene = async (scene: GenericScene, workflowType: string, path: string, close: () => void) => {
+    const createInpaintScene = async (
+      scene: GenericScene,
+      workflowType: string,
+      path: string,
+      close: () => void,
+    ) => {
       let image = await imageService.fetchImage(path);
       image = dataUriToBase64(image!);
       let cnt = 0;
@@ -469,10 +480,7 @@ const QueueControl = observer(
       const preset = job
         ? workFlowService.createPreset(workflowType, job)
         : workFlowService.buildPreset(workflowType);
-      preset.image = await imageService.storeVibeImage(
-        curSession!,
-        image,
-      );
+      preset.image = await imageService.storeVibeImage(curSession!, image);
       const newScene = InpaintScene.fromJSON({
         type: 'inpaint',
         name: name,
@@ -566,26 +574,29 @@ const QueueControl = observer(
         const menu = await appState.pushDialogAsync({
           type: 'select',
           text: '이미지 변형 방법을 선택해주세요',
-          items: [{
-            text: '이미지 변형 씬 생성',
-            value: 'create'
-          }
-        ].concat(oneTimeFlows.map((x) => ({
-          text: x.text,
-          value: x.text
-          })))
+          items: [
+            {
+              text: '이미지 변형 씬 생성',
+              value: 'create',
+            },
+          ].concat(
+            oneTimeFlows.map((x) => ({
+              text: x.text,
+              value: x.text,
+            })),
+          ),
         });
         if (!menu) return;
         if (menu === 'create') {
           const flows = workFlowService.i2iFlows;
           const items = flows.map((x) => ({
-            text: (x.def.emoji??'')+x.def.title,
-            value: x.getType()
+            text: (x.def.emoji ?? '') + x.def.title,
+            value: x.getType(),
           }));
           const method = await appState.pushDialogAsync({
             type: 'select',
             text: '변형 씬에서 사용할 방법을 선택해주세요',
-            items: items
+            items: items,
           });
           if (!method) return;
           await createInpaintScene(scene, method, path, close);
@@ -594,7 +605,9 @@ const QueueControl = observer(
           image = dataUriToBase64(image!);
           const job = await extractPromptDataFromBase64(image);
           const menuItem = oneTimeFlowMap.get(menu)!;
-          const input = menuItem.getInput ? await menuItem.getInput(curSession!) : undefined;
+          const input = menuItem.getInput
+            ? await menuItem.getInput(curSession!)
+            : undefined;
           menuItem.handler(curSession!, scene, image, undefined, job, input);
         }
       },

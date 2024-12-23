@@ -268,7 +268,7 @@ export class Scene extends AbstractScene implements IScene {
     scene.slots = json.slots.map((slot) =>
       slot.map((piece) => PromptPiece.fromJSON(piece)),
     );
-    scene.meta = new Map(Object.entries(json.meta??{}));
+    scene.meta = new Map(Object.entries(json.meta ?? {}));
     return scene;
   }
 
@@ -417,9 +417,7 @@ export class Session implements Serealizable {
     const presets = this.presets.get(preset.type) || [];
     if (presets.find((p) => p.name === preset.name)) {
       let i = 1;
-      while (
-        presets.find((p) => p.name === preset.name + i.toString())
-      ) {
+      while (presets.find((p) => p.name === preset.name + i.toString())) {
         i++;
       }
       preset.name = preset.name + i.toString();
@@ -599,5 +597,9 @@ export const isValidSession = (session: any) => {
 };
 
 export const isValidPieceLibrary = (library: any) => {
-  return (typeof library.name === 'string' || typeof library.description=== 'string') && library.pieces;
+  return (
+    (typeof library.name === 'string' ||
+      typeof library.description === 'string') &&
+    library.pieces
+  );
 };

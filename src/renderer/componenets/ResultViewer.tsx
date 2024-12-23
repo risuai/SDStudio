@@ -135,7 +135,7 @@ const Cell = memo(
       isMainImage,
       onFilenameChange,
       imageSize,
-      selectedImages
+      selectedImages,
     } = data as any;
 
     const { curSession } = appState;
@@ -161,7 +161,12 @@ const Cell = memo(
         }
         forceUpdate({});
       };
-      const dispose = reaction(()=>scene.mains.join(''), ()=>{forceUpdate({});});
+      const dispose = reaction(
+        () => scene.mains.join(''),
+        () => {
+          forceUpdate({});
+        },
+      );
       const refreshMainImage = () => {
         forceUpdate({});
       };
@@ -326,30 +331,32 @@ const Cell = memo(
                 </div>
               )}
               {selectedImages.has(path) && (
-                <div className="absolute left-0 top-0 z-10 bg-sky-500 opacity-50 text-md w-full h-full" onContextMenu={(e)=>{
-                  const cands = [];
-                  const set = new Set<string>();
-                  for (const image of filePaths) {
-                    set.add(image);
-                  }
-                  for (const image of selectedImages) {
-                    if (set.has(image)) {
-                      cands.push(image);
+                <div
+                  className="absolute left-0 top-0 z-10 bg-sky-500 opacity-50 text-md w-full h-full"
+                  onContextMenu={(e) => {
+                    const cands = [];
+                    const set = new Set<string>();
+                    for (const image of filePaths) {
+                      set.add(image);
                     }
-                  }
-                  show({
-                    event: e,
-                    props: {
-                      ctx: {
-                        type: 'gallary_image',
-                        path: cands,
-                        scene: scene,
-                        starable: true
+                    for (const image of selectedImages) {
+                      if (set.has(image)) {
+                        cands.push(image);
                       }
                     }
-                  })
-                }}>
-                </div>
+                    show({
+                      event: e,
+                      props: {
+                        ctx: {
+                          type: 'gallary_image',
+                          path: cands,
+                          scene: scene,
+                          starable: true,
+                        },
+                      },
+                    });
+                  }}
+                ></div>
               )}
             </div>
           </>
@@ -425,7 +432,7 @@ const ImageGallery = forwardRef<ImageGalleryRef, ImageGalleryProps>(
         if (refresh) {
           refresh();
         }
-      }
+      },
     }));
 
     useEffect(() => {
@@ -863,23 +870,26 @@ const ResultViewer = forwardRef<ResultVieweRef, ResultViewerProps>(
       .map(
         (path) => imageService.getOutputDir(curSession!, scene) + '/' + path,
       );
-    const onSelected = useCallback((index: any) => {
-      if (selectMode) {
-        if (selectedImages.current.has(paths[index])) {
-          selectedImages.current.delete(paths[index]);
+    const onSelected = useCallback(
+      (index: any) => {
+        if (selectMode) {
+          if (selectedImages.current.has(paths[index])) {
+            selectedImages.current.delete(paths[index]);
+          } else {
+            selectedImages.current.add(paths[index]);
+          }
+          if (gallaryRef.current) {
+            gallaryRef.current.refeshImage(paths[index]);
+          }
+          if (gallaryRef2.current) {
+            gallaryRef2.current.refeshImage(paths[index]);
+          }
         } else {
-          selectedImages.current.add(paths[index]);
+          setSelectedImageIndex(index);
         }
-        if (gallaryRef.current) {
-          gallaryRef.current.refeshImage(paths[index]);
-        }
-        if (gallaryRef2.current) {
-          gallaryRef2.current.refeshImage(paths[index]);
-        }
-      } else {
-        setSelectedImageIndex(index);
-      }
-    }, [selectMode, paths]);
+      },
+      [selectMode, paths],
+    );
     const onDeleteImages = async (scene: GenericScene) => {
       appState.pushDialog({
         type: 'select',
@@ -979,7 +989,7 @@ const ResultViewer = forwardRef<ResultVieweRef, ResultViewerProps>(
                 <span className="inline-flex items-center gap-1">
                   이미지 선택 모드 ON
                 </span>
-              ) : (!isMobile ? (
+              ) : !isMobile ? (
                 scene.type === 'inpaint' ? (
                   <span className="inline-flex items-center gap-1">
                     {emoji} {title} 씬 {scene.name}의 생성된 이미지
@@ -997,7 +1007,7 @@ const ResultViewer = forwardRef<ResultVieweRef, ResultViewerProps>(
                 <span className="inline-flex items-center gap-1">
                   🖼️ 일반 씬 {scene.name}
                 </span>
-              ))}
+              )}
             </span>
           </div>
           <div className="md:flex justify-between items-center mt-2 md:mt-4">
@@ -1060,15 +1070,17 @@ const ResultViewer = forwardRef<ResultVieweRef, ResultViewerProps>(
                 </button>
               )}
               <button
-                className={`round-button ` + (selectMode ? 'back-sky' : 'back-gray')}
-                onClick={()=>{
+                className={
+                  `round-button ` + (selectMode ? 'back-sky' : 'back-gray')
+                }
+                onClick={() => {
                   if (selectMode) {
                     selectedImages.current.clear();
                   }
                   setSelectMode(!selectMode);
                 }}
-                >
-                <FaRegSquareCheck/>
+              >
+                <FaRegSquareCheck />
               </button>
               <button
                 className={`round-button back-red`}
