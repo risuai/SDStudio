@@ -30,9 +30,9 @@ export class NovelAiImageGenService implements ImageGenService {
 
   private translateModel(model: Model): string {
     const modelMap = {
-      anime: 'nai-diffusion-3',
+      anime: 'nai-diffusion-4-curated-preview',
       inpaint: 'nai-diffusion-3-inpainting',
-      i2i: 'nai-diffusion-3',
+      i2i: 'nai-diffusion-4-curated-preview',
     } as const;
     return modelMap[model];
   }
@@ -111,6 +111,7 @@ export class NovelAiImageGenService implements ImageGenService {
     let action = undefined;
     switch (params.model) {
     case Model.Anime:
+      action = 'generate';
       break;
     case Model.Inpaint:
       action = 'infill';
@@ -177,12 +178,40 @@ export class NovelAiImageGenService implements ImageGenService {
         body.parameters.sampler = this.translateSampling(Sampling.KEulerAncestral);
       }
     }
+    if (params.model === Model.Anime) {
+      body.parameters.params_version = 3
+      body.parameters.add_original_image = true
+      body.parameters.characterPrompts = []
+      body.parameters.legacy = false
+      body.parameters.legacy_v3_extend = false
+      body.parameters.prefer_brownian = true
+      body.parameters.ucPreset = 0
+      body.parameters.use_coords = false
+      body.parameters.sm = undefined
+      body.parameters.sm_dyn = undefined
+      body.parameters.enable_hr = undefined
+      body.parameters.enable_AD = undefined
+
+      body.parameters.v4_prompt = {
+        caption: {
+          base_caption: params.prompt,
+          char_captions: [],
+        },
+        use_coords: false,
+        use_order: false,
+      }
+      body.parameters.v4_negative_prompt = {
+        caption: {
+          base_caption: params.uc,
+          char_captions: [],
+        }
+      }
+    }
 
     const headers = {
       Authorization: `Bearer ${authorization}`,
       'Content-Type': 'application/json',
     };
-
     const arrayBuffer = await this.fetcher.fetchArrayBuffer(
       this.apiEndpoint2 + '/ai/generate-image',
       body,
