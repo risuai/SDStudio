@@ -96,8 +96,6 @@ export class NovelAiImageGenService implements ImageGenService {
   }
 
   public async generateImage(authorization: string, params: ImageGenInput) {
-    console.log('generateImage');
-    console.log(params);
     let modelValue = this.translateModel(params.model);
     const resolutionValue = params.resolution;
     const samplingValue = this.translateSampling(params.sampling);
@@ -196,21 +194,36 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.enable_hr = undefined;
       body.parameters.enable_AD = undefined;
 
+      const center = { x: 0.5, y: 0.5 };
+      body.parameters.characterPrompts = (params.characterPrompts ?? [])
+        .map((charPrompt, index) => ({
+          prompt: charPrompt,
+          uc: params.characterUCs?.[index] ?? '',
+          center,
+        }));
       body.parameters.v4_prompt = {
         caption: {
           base_caption: params.prompt,
-          char_captions: params.characterPrompts ?? [],
+          char_captions: params.characterPrompts?.map((charPrompt) => ({
+            char_caption: charPrompt,
+            centers: [center],
+          })) ?? [],
         },
         use_coords: false,
-        use_order: false,
+        use_order: true,
       };
       body.parameters.v4_negative_prompt = {
         caption: {
           base_caption: params.uc,
-          char_captions: params.characterUCs ?? [],
+          char_captions: params.characterUCs?.map((charUC) => ({
+            char_caption: charUC,
+            centers: [center],
+          })) ?? [],
         },
       };
     }
+
+    console.log(body);
 
     const headers = {
       Authorization: `Bearer ${authorization}`,
