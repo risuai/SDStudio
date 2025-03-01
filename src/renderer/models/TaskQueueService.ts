@@ -295,9 +295,17 @@ class GenerateImageTaskHandler implements TaskHandler {
       cfgRescale: job.cfgRescale,
       noiseSchedule: job.noiseSchedule as NoiseSchedule,
       promptGuidance: job.promptGuidance,
+      characterPrompts: [],
+      characterUCs: [],
       outputFilePath: outputFilePath,
       seed: job.seed,
     };
+    if (this.type === 'gen' && job.characterPrompts.length > 0) {
+      for (const characterPrompt of job.characterPrompts) {
+        arg.characterPrompts?.push(characterPrompt.prompt);
+        arg.characterUCs?.push(characterPrompt.uc);
+      }
+    }
     if (this.type === 'inpaint') {
       const inpaintJob = job as SDInpaintJob;
       arg.model = Model.Inpaint;
@@ -314,7 +322,6 @@ class GenerateImageTaskHandler implements TaskHandler {
       arg.originalImage = true;
       arg.imageStrength = i2iJob.strength;
     }
-    console.log(arg);
     const config = await backend.getConfig();
     if (!config.uuid) {
       config.uuid = v4();

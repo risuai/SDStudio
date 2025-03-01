@@ -96,6 +96,8 @@ export class NovelAiImageGenService implements ImageGenService {
   }
 
   public async generateImage(authorization: string, params: ImageGenInput) {
+    console.log('generateImage');
+    console.log(params);
     let modelValue = this.translateModel(params.model);
     const resolutionValue = params.resolution;
     const samplingValue = this.translateSampling(params.sampling);
@@ -205,7 +207,7 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.v4_negative_prompt = {
         caption: {
           base_caption: params.uc,
-          char_captions: params.characterNegativePrompts ?? [],
+          char_captions: params.characterUCs ?? [],
         },
       };
     }

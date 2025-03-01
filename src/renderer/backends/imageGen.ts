@@ -114,7 +114,7 @@ export interface ImageGenInput {
   seed?: number;
   originalImage?: boolean;
   characterPrompts?: string[];
-  characterNegativePrompts?: string[];
+  characterUCs?: string[];
 }
 
 export type AugmentMethod =
