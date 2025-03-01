@@ -101,9 +101,9 @@ export class NovelAiImageGenService implements ImageGenService {
     const samplingValue = this.translateSampling(params.sampling);
 
     const config = await backend.getConfig();
-    if (config.useAnimalModel) {
+    if (config.useCuratedModel) {
       if (params.model === Model.Anime) {
-        modelValue = 'nai-diffusion-furry-3';
+        modelValue = 'nai-diffusion-4-curated-preview';
       }
     }
 

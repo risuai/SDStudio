@@ -22,7 +22,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
   const [whiteMode, setWhiteMode] = useState(false);
   const [noIpCheck, setNoIpCheck] = useState(false);
   const [disableQuality, setDisableQuality] = useState(false);
-  const [animalModel, setAnimalModel] = useState(false);
+  const [curatedModel, setCuratedModel] = useState(false);
   const [useLocalBgRemoval, setUseLocalBgRemoval] = useState(false);
   const [refreshImage, setRefreshImage] = useState(false);
   const [ready, setReady] = useState(false);
@@ -43,7 +43,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
       setRefreshImage(config.refreshImage ?? false);
       setUseLocalBgRemoval(config.useLocalBgRemoval ?? false);
       setDisableQuality(config.disableQuality ?? false);
-      setAnimalModel(config.useAnimalModel ?? false);
+      setCuratedModel(config.useCuratedModel ?? false);
     })();
     const checkReady = () => {
       setReady(localAIService.ready);
@@ -315,12 +315,12 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
         </div>
         <div className="mt-4 flex items-center gap-2">
           <label htmlFor="whiteMode" className="text-sm gray-label">
-            NAI 동물 모델 사용
+            NAI V4 Curated 모델 사용
           </label>
           <input
             type="checkbox"
-            checked={animalModel}
-            onChange={(e) => setAnimalModel(e.target.checked)}
+            checked={curatedModel}
+            onChange={(e) => setCuratedModel(e.target.checked)}
           />
         </div>
         <button
@@ -337,7 +337,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
               disableQuality: disableQuality,
               whiteMode: whiteMode,
               useLocalBgRemoval: useLocalBgRemoval,
-              useAnimalModel: animalModel,
+              useCuratedModel: curatedModel,
             };
             await backend.setConfig(config);
             if (old.useCUDA !== useGPU) localAIService.modelChanged();
