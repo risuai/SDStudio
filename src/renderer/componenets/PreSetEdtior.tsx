@@ -1056,8 +1056,9 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
     const characters = [...getField()];
     characters.push({
       id: v4(),
-      name: `Character ${characters.length + 1}`,
+      name: '',
       prompt: '',
+      uc: '',
       position: 'center',
       enabled: true,
     });
@@ -1076,14 +1077,6 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
     setField(characters);
   };
 
-  const positionOptions = [
-    { label: "Left", value: "left" },
-    { label: "Center", value: "center" },
-    { label: "Right", value: "right" },
-    { label: "Background", value: "background" },
-    { label: "Foreground", value: "foreground" },
-  ];
-
   if (editCharacters !== input.field) {
     return null;
   }
@@ -1092,40 +1085,13 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
     <div className="w-full h-full overflow-hidden flex flex-col">
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-auto">
-          {getField().length === 0 && (
-            <div className="text-center py-4 text-gray-500">
-              No characters added. Click "Add Character" to create one.
-            </div>
-          )}
-          
           {getField().map((character: CharacterPrompt) => (
-            <div key={character.id} className="border rounded-md p-3 mb-3 bg-gray-50 dark:bg-gray-800">
+            <div key={character.id} className="border rounded-md mt-3 p-3">
               <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2">
-                  <input 
-                    className="gray-input font-medium"
-                    value={character.name}
-                    onChange={(e) => updateCharacter(character.id, { name: e.target.value })}
-                    placeholder="Character name"
-                  />
-                  <button
-                    className="icon-button"
-                    onClick={() => updateCharacter(character.id, { enabled: !character.enabled })}
-                  >
-                    {character.enabled ? <FaToggleOn className="text-green-500" /> : <FaToggleOff className="text-gray-400" />}
-                  </button>
+                <div className="flex items-center gap-2 gray-label">
+                  캐릭터 프롬프트
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    <FaArrowsAlt className="mr-2 text-gray-500" />
-                    <DropdownSelect
-                      selectedOption={character.position}
-                      options={positionOptions}
-                      disabled={false}
-                      menuPlacement="bottom"
-                      onSelect={(opt) => updateCharacter(character.id, { position: opt.value })}
-                    />
-                  </div>
                   <button
                     className="icon-button back-red"
                     onClick={() => removeCharacter(character.id)}
@@ -1134,12 +1100,21 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
                   </button>
                 </div>
               </div>
-              
-              <div className={character.enabled ? "" : "opacity-50"}>
+              <div className='mb-2'>
                 <PromptEditTextArea
                   value={character.prompt}
                   onChange={(value) => updateCharacter(character.id, { prompt: value })}
-                  disabled={!character.enabled}
+                />
+              </div>
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2 gray-label">
+                  네거티브 프롬프트
+                </div>
+              </div>
+              <div className='mb-2'>
+                <PromptEditTextArea
+                  value={character.uc}
+                  onChange={(value) => updateCharacter(character.id, { uc: value })}
                 />
               </div>
             </div>
@@ -1151,15 +1126,15 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
           className="round-button back-green h-8"
           onClick={addCharacter}
         >
-          <FaPlus className="mr-1" /> Add Character
+          캐릭터 추가
         </button>
         <button
-          className={`round-button back-gray h-8 w-full`}
+          className="round-button back-gray h-8 w-full"
           onClick={() => {
             setEditCharacters(undefined);
           }}
         >
-          Close Characters Editor
+          캐릭터 프롬프트 닫기
         </button>
       </div>
     </div>
@@ -1188,7 +1163,7 @@ export const CharacterButton = ({ input }: { input: WFIInlineInput }) => {
           onClick={onClick}
         >
           <div className="flex-1">
-            <FaUserAlt className="inline mr-2" /> Configure Characters
+            <FaUserAlt className="inline mr-2" />캐릭터 프롬프트 열기
           </div>
         </button>
       )}
@@ -1200,22 +1175,12 @@ export const CharacterButton = ({ input }: { input: WFIInlineInput }) => {
           >
             <div className="flex items-center">
               <FaUserAlt className="mr-2" /> 
-              <span>Edit {getField().length} Character{getField().length !== 1 ? 's' : ''}</span>
+              <span>캐릭터 프롬프트 열기</span>
             </div>
             <div className="flex flex-wrap gap-1">
-              {getField().slice(0, 3).map((char: CharacterPrompt) => (
-                <span 
-                  key={char.id} 
-                  className={`px-2 py-0.5 text-xs rounded-full ${char.enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
-                >
-                  {char.name}
-                </span>
-              ))}
-              {getField().length > 3 && (
-                <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
-                  +{getField().length - 3}
-                </span>
-              )}
+              <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-green-800">
+                {getField().length}
+              </span>
             </div>
           </button>
         </div>

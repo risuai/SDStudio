@@ -53,8 +53,8 @@ const SDImageGenUI = wfiStack([
   wfiMiddlePlaceholderInput('중간 프롬프트 (이 씬에만 적용됨)'),
   wfiInlineInput('하위 프롬프트', 'backPrompt', 'preset', 'flex-1'),
   wfiInlineInput('네거티브 프롬프트', 'uc', 'preset', 'flex-1'),
-  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'preset', 'flex-none'),
   wfiInlineInput('시드', 'seed', 'shared', 'flex-none'),
+  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'preset', 'flex-none'),
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
