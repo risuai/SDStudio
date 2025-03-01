@@ -603,3 +603,11 @@ export const isValidPieceLibrary = (library: any) => {
     library.pieces
   );
 };
+
+export interface CharacterPrompt {
+  id: string;
+  name: string;
+  prompt: string;
+  position: string; // Can be "left", "center", "right", etc.
+  enabled: boolean;
+}

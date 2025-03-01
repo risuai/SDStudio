@@ -197,7 +197,7 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.v4_prompt = {
         caption: {
           base_caption: params.prompt,
-          char_captions: [],
+          char_captions: params.characterPrompts ?? [],
         },
         use_coords: false,
         use_order: false,
@@ -205,7 +205,7 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.v4_negative_prompt = {
         caption: {
           base_caption: params.uc,
-          char_captions: [],
+          char_captions: params.characterNegativePrompts ?? [],
         },
       };
     }

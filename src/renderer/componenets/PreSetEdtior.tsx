@@ -18,12 +18,17 @@ import {
   FaShare,
   FaTrash,
   FaTrashAlt,
+  FaUserAlt,
+  FaArrowsAlt,
+  FaToggleOn,
+  FaToggleOff,
 } from 'react-icons/fa';
 import { FloatView } from './FloatView';
 import { v4 } from 'uuid';
 import { BigPromptEditor, SlotPiece } from './SceneEditor';
 import { useContextMenu } from 'react-contexify';
 import {
+  CharacterPrompt,
   ContextMenuType,
   PromptNode,
   PromptPiece,
@@ -826,6 +831,8 @@ interface IWFElementContext {
   middlePromptMode: boolean;
   editVibe: WFIInlineInput | undefined;
   setEditVibe: (vibe: WFIInlineInput | undefined) => void;
+  editCharacters: string | undefined;
+  setEditCharacters: (field: string | undefined) => void;
   showGroup?: string;
   setShowGroup: (group: string | undefined) => void;
   getMiddlePrompt?: () => string;
@@ -1030,8 +1037,195 @@ const WFRPush = observer(({ element }: WFElementProps) => {
   }
 });
 
+const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) => {
+  const { preset, shared, meta, type, editCharacters, setEditCharacters } = useContext(WFElementContext)!;
+
+  const getField = () => {
+    if (input.fieldType === 'preset') return preset[input.field] || [];
+    if (input.fieldType === 'shared') return shared[input.field] || [];
+    return meta![input.field] || [];
+  };
+
+  const setField = (val: any) => {
+    if (input.fieldType === 'preset') preset[input.field] = val;
+    else if (input.fieldType === 'shared') shared[input.field] = val;
+    else meta![input.field] = val;
+  };
+
+  const addCharacter = () => {
+    const characters = [...getField()];
+    characters.push({
+      id: v4(),
+      name: `Character ${characters.length + 1}`,
+      prompt: '',
+      position: 'center',
+      enabled: true,
+    });
+    setField(characters);
+  };
+
+  const removeCharacter = (id: string) => {
+    const characters = getField().filter((c: CharacterPrompt) => c.id !== id);
+    setField(characters);
+  };
+
+  const updateCharacter = (id: string, updates: Partial<CharacterPrompt>) => {
+    const characters = getField().map((c: CharacterPrompt) => 
+      c.id === id ? { ...c, ...updates } : c
+    );
+    setField(characters);
+  };
+
+  const positionOptions = [
+    { label: "Left", value: "left" },
+    { label: "Center", value: "center" },
+    { label: "Right", value: "right" },
+    { label: "Background", value: "background" },
+    { label: "Foreground", value: "foreground" },
+  ];
+
+  if (editCharacters !== input.field) {
+    return null;
+  }
+
+  return (
+    <div className="w-full h-full overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-auto">
+          {getField().length === 0 && (
+            <div className="text-center py-4 text-gray-500">
+              No characters added. Click "Add Character" to create one.
+            </div>
+          )}
+          
+          {getField().map((character: CharacterPrompt) => (
+            <div key={character.id} className="border rounded-md p-3 mb-3 bg-gray-50 dark:bg-gray-800">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <input 
+                    className="gray-input font-medium"
+                    value={character.name}
+                    onChange={(e) => updateCharacter(character.id, { name: e.target.value })}
+                    placeholder="Character name"
+                  />
+                  <button
+                    className="icon-button"
+                    onClick={() => updateCharacter(character.id, { enabled: !character.enabled })}
+                  >
+                    {character.enabled ? <FaToggleOn className="text-green-500" /> : <FaToggleOff className="text-gray-400" />}
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center">
+                    <FaArrowsAlt className="mr-2 text-gray-500" />
+                    <DropdownSelect
+                      selectedOption={character.position}
+                      options={positionOptions}
+                      disabled={false}
+                      menuPlacement="bottom"
+                      onSelect={(opt) => updateCharacter(character.id, { position: opt.value })}
+                    />
+                  </div>
+                  <button
+                    className="icon-button back-red"
+                    onClick={() => removeCharacter(character.id)}
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </div>
+              
+              <div className={character.enabled ? "" : "opacity-50"}>
+                <PromptEditTextArea
+                  value={character.prompt}
+                  onChange={(value) => updateCharacter(character.id, { prompt: value })}
+                  disabled={!character.enabled}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex-none mt-auto pt-2 flex gap-2 items-center">
+        <button
+          className="round-button back-green h-8"
+          onClick={addCharacter}
+        >
+          <FaPlus className="mr-1" /> Add Character
+        </button>
+        <button
+          className={`round-button back-gray h-8 w-full`}
+          onClick={() => {
+            setEditCharacters(undefined);
+          }}
+        >
+          Close Characters Editor
+        </button>
+      </div>
+    </div>
+  );
+});
+
+export const CharacterButton = ({ input }: { input: WFIInlineInput }) => {
+  const { editCharacters, setEditCharacters, preset, shared, meta } =
+    useContext(WFElementContext)!;
+  
+  const getField = () => {
+    if (input.fieldType === 'preset') return preset[input.field] || [];
+    if (input.fieldType === 'shared') return shared[input.field] || [];
+    return meta![input.field] || [];
+  };
+  
+  const onClick = () => {
+    setEditCharacters(input.field);
+  };
+  
+  return (
+    <>
+      {editCharacters === undefined && getField().length === 0 && (
+        <button
+          className={`round-button back-gray h-8 w-full flex mt-2`}
+          onClick={onClick}
+        >
+          <div className="flex-1">
+            <FaUserAlt className="inline mr-2" /> Configure Characters
+          </div>
+        </button>
+      )}
+      {editCharacters === undefined && getField().length > 0 && (
+        <div className="w-full mt-2">
+          <button
+            className="round-button back-sky h-8 w-full flex justify-between items-center"
+            onClick={onClick}
+          >
+            <div className="flex items-center">
+              <FaUserAlt className="mr-2" /> 
+              <span>Edit {getField().length} Character{getField().length !== 1 ? 's' : ''}</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {getField().slice(0, 3).map((char: CharacterPrompt) => (
+                <span 
+                  key={char.id} 
+                  className={`px-2 py-0.5 text-xs rounded-full ${char.enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}
+                >
+                  {char.name}
+                </span>
+              ))}
+              {getField().length > 3 && (
+                <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
+                  +{getField().length - 3}
+                </span>
+              )}
+            </div>
+          </button>
+        </div>
+      )}
+    </>
+  );
+};
+
 const WFRInline = observer(({ element }: WFElementProps) => {
-  const { editVibe, type, showGroup, preset, shared, meta } =
+  const { editVibe, editCharacters, type, showGroup, preset, shared, meta } =
     useContext(WFElementContext)!;
   const { curGroup } = useContext(WFGroupContext)!;
   const input = element as WFIInlineInput;
@@ -1054,7 +1248,7 @@ const WFRInline = observer(({ element }: WFElementProps) => {
       meta![input.field] = val;
     }
   };
-  if (curGroup !== showGroup || editVibe != undefined) {
+  if (curGroup !== showGroup || editVibe != undefined || editCharacters !== undefined) {
     return <></>;
   }
   const key = `${type}_${preset.name}_${input.field}`;
@@ -1088,6 +1282,8 @@ const WFRInline = observer(({ element }: WFElementProps) => {
           />
         </InlineEditorField>
       );
+    case 'characterPrompts':
+      return <CharacterButton input={input} key={key} />;
     case 'nullInt':
       return (
         <InlineEditorField label={input.label}>
@@ -1193,6 +1389,9 @@ export const PreSetEditorImpl = observer(
     const [editVibe, setEditVibe] = useState<WFIInlineInput | undefined>(
       undefined,
     );
+    const [editCharacters, setEditCharacters] = useState<string | undefined>(
+      undefined,
+    );
     const [showGroup, setShowGroup] = useState<string | undefined>(undefined);
     useEffect(() => {
       setShowGroup(undefined);
@@ -1207,6 +1406,8 @@ export const PreSetEditorImpl = observer(
             showGroup: showGroup,
             editVibe: editVibe,
             setEditVibe: setEditVibe,
+            editCharacters: editCharacters,
+            setEditCharacters: setEditCharacters,
             setShowGroup: setShowGroup,
             type: type,
             middlePromptMode,
@@ -1216,7 +1417,16 @@ export const PreSetEditorImpl = observer(
         >
           <WFGroupContext.Provider value={{}}>
             <VibeEditor disabled={false} />
-            <WFRenderElement element={element} />
+            {editCharacters && 
+              <CharacterPromptEditor input={{ 
+                type: 'inline', 
+                label: 'Characters', 
+                field: editCharacters, 
+                fieldType: 'preset', 
+                flex: 'flex-none' 
+              } as WFIInlineInput} />
+            }
+            {!editVibe && !editCharacters && <WFRenderElement element={element} />}
           </WFGroupContext.Provider>
         </WFElementContext.Provider>
       </StackGrow>

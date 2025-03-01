@@ -122,6 +122,11 @@ export interface WFSelectVar extends WFAbstractVar {
   default: string;
 }
 
+export interface WFCharacterPromptsVar extends WFAbstractVar {
+  type: 'characterPrompts';
+  default: [],
+}
+
 export type WFVar =
   | WFIntVar
   | WFVibeSetVar
@@ -134,7 +139,8 @@ export type WFVar =
   | WFBackendVar
   | WFNullIntVar
   | WFStringVar
-  | WFSelectVar;
+  | WFSelectVar
+  | WFCharacterPromptsVar;
 
 export type WFFieldType = 'preset' | 'shared' | 'meta';
 
@@ -237,6 +243,8 @@ function createDefaultValue(varObj: WFVar) {
       return (varObj as WFStringVar).default;
     case 'select':
       return (varObj as WFSelectVar).default;
+    case 'characterPrompts':
+      return (varObj as WFCharacterPromptsVar).default;
     default:
       throw new Error('Unknown type');
   }
@@ -408,6 +416,15 @@ export class WFVarBuilder {
       name,
       options,
       default: defaultValue,
+    });
+    return this;
+  }
+
+  addCharacterPromptsVar(name: string): this {
+    this.vars.push({
+      type: 'characterPrompts',
+      name,
+      default: [],
     });
     return this;
   }
