@@ -300,7 +300,7 @@ class GenerateImageTaskHandler implements TaskHandler {
       outputFilePath: outputFilePath,
       seed: job.seed,
     };
-    if (this.type === 'gen' && job.characterPrompts.length > 0) {
+    if (this.type === 'gen' && job.characterPrompts?.length > 0) {
       for (const characterPrompt of job.characterPrompts) {
         arg.characterPrompts?.push(characterPrompt.prompt);
         arg.characterUCs?.push(characterPrompt.uc);
