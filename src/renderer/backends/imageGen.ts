@@ -72,6 +72,7 @@ export enum Sampling {
   KDPMPP2SAncestral = 'k_dpmpp_2s_ancestral',
   KDPMPP2M = 'k_dpmpp_2m',
   KDPMPPSDE = 'k_dpmpp_sde',
+  KDPMPP2MSDE = 'k_dpmpp_2m_sde',
   DDIM = 'ddim_v3',
 }
 

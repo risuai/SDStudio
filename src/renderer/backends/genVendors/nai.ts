@@ -44,6 +44,7 @@ export class NovelAiImageGenService implements ImageGenService {
       k_dpmpp_2s_ancestral: 'k_dpmpp_2s_ancestral',
       k_dpmpp_2m: 'k_dpmpp_2m',
       k_dpmpp_sde: 'k_dpmpp_sde',
+      k_dpmpp_2m_sde: 'k_dpmpp_2m_sde',
       ddim_v3: 'ddim_v3',
     } as const;
     return samplingMap[sampling];

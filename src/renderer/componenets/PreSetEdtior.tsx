@@ -1081,7 +1081,7 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
 
   const removeCharacter = (id: string) => {
     const characters = getField().filter((c: CharacterPrompt) => c.id !== id);
-    removeCharacterMiddlePrompt!(id);
+    if (middlePromptMode) removeCharacterMiddlePrompt!(id);
     setField(characters);
   };
 
