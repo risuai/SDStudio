@@ -301,8 +301,10 @@ class GenerateImageTaskHandler implements TaskHandler {
       seed: job.seed,
     };
     if (this.type === 'gen' && job.characterPrompts?.length > 0) {
+      const scene = task.params.scene as Scene;
       for (const characterPrompt of job.characterPrompts) {
-        arg.characterPrompts?.push(characterPrompt.prompt);
+        const middle = scene.characterMiddlePrompt[characterPrompt.id] ?? '';
+        arg.characterPrompts?.push(characterPrompt.prompt + middle);
         arg.characterUCs?.push(characterPrompt.uc);
       }
     }
