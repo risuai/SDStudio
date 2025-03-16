@@ -1145,46 +1145,48 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
                   onChange={(value) => updateCharacter(character.id, { uc: value })}
                 />
               </div>
-              <div className="flex w-full items-center md:flex-row flex-col gap-2">
-                <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
-                  X 위치:
-                </div>
-                <div className="flex flex-1 md:w-auto w-full gap-1">
-                  <input
-                    className="flex-1"
-                    type="range"
-                    step="0.01"
-                    min="0"
-                    max="1"
-                    value={character.position.x}
-                    onChange={(e) => updateCharacter(character.id, {
-                      position: { ...character.position, x: parseFloat(e.target.value) }
-                    })}
-                  />
-                  <div className="w-11 flex-none text-lg text-center back-lllgray">
-                    {character.position.x.toFixed(2)}
+              {preset.useCoords &&
+                <div className="flex w-full items-center md:flex-row flex-col gap-2">
+                  <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
+                    X 위치:
+                  </div>
+                  <div className="flex flex-1 md:w-auto w-full gap-1">
+                    <input
+                      className="flex-1"
+                      type="range"
+                      step="0.01"
+                      min="0"
+                      max="1"
+                      value={character.position.x}
+                      onChange={(e) => updateCharacter(character.id, {
+                        position: { ...character.position, x: parseFloat(e.target.value) }
+                      })}
+                    />
+                    <div className="w-11 flex-none text-lg text-center back-lllgray">
+                      {character.position.x.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
+                    Y 위치:
+                  </div>
+                  <div className="flex flex-1 md:w-auto w-full gap-1">
+                    <input
+                      className="flex-1"
+                      type="range"
+                      step="0.01"
+                      min="0"
+                      max="1"
+                      value={character.position.y}
+                      onChange={(e) => updateCharacter(character.id, {
+                        position: { ...character.position, y: parseFloat(e.target.value) }
+                      })}
+                    />
+                    <div className="w-11 flex-none text-lg text-center back-lllgray">
+                      {character.position.y.toFixed(2)}
+                    </div>
                   </div>
                 </div>
-                <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
-                  Y 위치:
-                </div>
-                <div className="flex flex-1 md:w-auto w-full gap-1">
-                  <input
-                    className="flex-1"
-                    type="range"
-                    step="0.01"
-                    min="0"
-                    max="1"
-                    value={character.position.y}
-                    onChange={(e) => updateCharacter(character.id, {
-                      position: { ...character.position, y: parseFloat(e.target.value) }
-                    })}
-                  />
-                  <div className="w-11 flex-none text-lg text-center back-lllgray">
-                    {character.position.y.toFixed(2)}
-                  </div>
-                </div>
-              </div>
+              }
             </div>
           ))}
         </div>

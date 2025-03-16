@@ -189,39 +189,38 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.legacy_v3_extend = false;
       body.parameters.prefer_brownian = true;
       body.parameters.ucPreset = 0;
-      body.parameters.use_coords = false;
+      body.parameters.use_coords = params.useCoords;
       body.parameters.autoSmea = params.sm;
       body.parameters.sm = undefined;
       body.parameters.sm_dyn = undefined;
       body.parameters.enable_hr = undefined;
       body.parameters.enable_AD = undefined;
 
-      console.log(params.characterPositions);
-
+      console.log(params)
       const center = { x: 0.5, y: 0.5 };
       body.parameters.characterPrompts = (params.characterPrompts ?? [])
         .map((charPrompt, index) => ({
           prompt: charPrompt,
           uc: params.characterUCs?.[index] ?? '',
-          center,
+          center: params.characterPositions?.[index] ?? center,
         }));
       body.parameters.v4_prompt = {
         caption: {
           base_caption: params.prompt,
-          char_captions: params.characterPrompts?.map((charPrompt) => ({
+          char_captions: params.characterPrompts?.map((charPrompt, index) => ({
             char_caption: charPrompt,
-            centers: [center],
+            centers: [params.characterPositions?.[index] ?? center],
           })) ?? [],
         },
-        use_coords: false,
+        use_coords: params.useCoords,
         use_order: true,
       };
       body.parameters.v4_negative_prompt = {
         caption: {
           base_caption: params.uc,
-          char_captions: params.characterUCs?.map((charUC) => ({
+          char_captions: params.characterUCs?.map((charUC, index) => ({
             char_caption: charUC,
-            centers: [center],
+            centers: [params.characterPositions?.[index] ?? center],
           })) ?? [],
         },
       };

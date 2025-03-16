@@ -116,6 +116,7 @@ export interface ImageGenInput {
   imageStrength?: number;
   seed?: number;
   originalImage?: boolean;
+  useCoords?: boolean;
   characterPrompts?: string[];
   characterUCs?: string[];
   characterPositions?: CharacterPosition[];

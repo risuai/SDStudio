@@ -298,6 +298,7 @@ class GenerateImageTaskHandler implements TaskHandler {
       characterPrompts: [],
       characterUCs: [],
       characterPositions: [],
+      useCoords: job.useCoords,
       outputFilePath: outputFilePath,
       seed: job.seed,
     };

@@ -41,7 +41,8 @@ const SDImageGenPreset = new WFVarBuilder()
   .addPromptVar('backPrompt', defaultBPrompt)
   .addPromptVar('uc', defaultUC)
   .addNoiseScheduleVar('noiseSchedule', NoiseSchedule.Native)
-  .addCharacterPromptsVar('characterPrompts');
+  .addCharacterPromptsVar('characterPrompts')
+  .addBoolVar('useCoords', false)
 
 const SDImageGenShared = new WFVarBuilder()
   .addVibeSetVar('vibes')
@@ -69,6 +70,7 @@ const SDImageGenUI = wfiStack([
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
+    wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none')
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'shared', 'flex-none'),
 ]);
@@ -132,6 +134,7 @@ const SDImageGenHandler = async (
     sampling: preset.sampling,
     uc: preset.uc,
     characterPrompts: preset.characterPrompts,
+    useCoords: preset.useCoords,
     noiseSchedule: preset.noiseSchedule,
     backend: preset.backend,
     vibes: shared.vibes,
@@ -262,6 +265,7 @@ const createSDI2IHandler = (type: string) => {
       sampling: preset.sampling,
       uc: preset.uc,
       characterPrompts: preset.characterPrompts,
+      useCoords: preset.useCoords,
       noiseSchedule: preset.noiseSchedule,
       backend: preset.backend,
       vibes: preset.vibes,
