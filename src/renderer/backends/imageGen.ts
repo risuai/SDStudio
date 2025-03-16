@@ -1,3 +1,5 @@
+import { CharacterPosition } from "../models/types";
+
 export enum Model {
   Anime = 'anime',
   Inpaint = 'inpaint',
@@ -116,6 +118,7 @@ export interface ImageGenInput {
   originalImage?: boolean;
   characterPrompts?: string[];
   characterUCs?: string[];
+  characterPositions?: CharacterPosition[];
 }
 
 export type AugmentMethod =

@@ -297,6 +297,7 @@ class GenerateImageTaskHandler implements TaskHandler {
       promptGuidance: job.promptGuidance,
       characterPrompts: [],
       characterUCs: [],
+      characterPositions: [],
       outputFilePath: outputFilePath,
       seed: job.seed,
     };
@@ -306,6 +307,7 @@ class GenerateImageTaskHandler implements TaskHandler {
         const middle = scene.characterMiddlePrompt[characterPrompt.id] ?? '';
         arg.characterPrompts?.push(characterPrompt.prompt + ',' + middle);
         arg.characterUCs?.push(characterPrompt.uc);
+        arg.characterPositions?.push(characterPrompt.position);
       }
     }
     if (this.type === 'inpaint') {

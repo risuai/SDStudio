@@ -613,4 +613,10 @@ export interface CharacterPrompt {
   id: string;
   prompt: string;
   uc: string;
+  position: CharacterPosition;
+}
+
+export interface CharacterPosition {
+  x: number;
+  y: number;
 }

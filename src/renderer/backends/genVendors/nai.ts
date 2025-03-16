@@ -190,10 +190,13 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.prefer_brownian = true;
       body.parameters.ucPreset = 0;
       body.parameters.use_coords = false;
+      body.parameters.autoSmea = params.sm;
       body.parameters.sm = undefined;
       body.parameters.sm_dyn = undefined;
       body.parameters.enable_hr = undefined;
       body.parameters.enable_AD = undefined;
+
+      console.log(params.characterPositions);
 
       const center = { x: 0.5, y: 0.5 };
       body.parameters.characterPrompts = (params.characterPrompts ?? [])
