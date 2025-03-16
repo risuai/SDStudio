@@ -182,23 +182,7 @@ export const getSceneKey = (session: Session, scene: GenericScene) => {
 };
 
 async function handleNAIDelay(numTry: number, fast: boolean) {
-  if (numTry === 0 && fast) {
-    await sleep(1000);
-  } else if (numTry <= 2 && fast) {
-    await sleep((1 + Math.random() * RANDOM_DELAY_STD) * 1000);
-  } else {
-    console.log('slow delay');
-    if (numTry === 0 && Math.random() > 0.98) {
-      await sleep(
-        (Math.random() * LARGE_RANDOM_DELAY_STD + LARGE_RANDOM_DELAY_BIAS) *
-          1000,
-      );
-    } else {
-      await sleep(
-        (Math.random() * RANDOM_DELAY_STD + RANDOM_DELAY_BIAS) * 1000,
-      );
-    }
-  }
+  return;
 }
 
 type ImageTaskType = 'gen' | 'inpaint' | 'i2i';
@@ -781,10 +765,6 @@ export class TaskQueueService extends EventTarget {
           done = true;
           cur.delayCnt--;
           if (cur.delayCnt === 0) {
-            await sleep(
-              (Math.random() * LARGE_WAIT_DELAY_STD + LARGE_WAIT_DELAY_BIAS) *
-                1000,
-            );
             cur.delayCnt = this.getDelayCnt();
           }
           if (!cur.stopped) {
