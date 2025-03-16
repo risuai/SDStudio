@@ -196,20 +196,22 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.enable_hr = undefined;
       body.parameters.enable_AD = undefined;
 
-      console.log(params)
       const center = { x: 0.5, y: 0.5 };
+      const charaPos = (index: number) => params.useCoords ?
+        params.characterPositions?.[index] ?? center
+        : center;
       body.parameters.characterPrompts = (params.characterPrompts ?? [])
         .map((charPrompt, index) => ({
           prompt: charPrompt,
           uc: params.characterUCs?.[index] ?? '',
-          center: params.characterPositions?.[index] ?? center,
+          center: charaPos(index),
         }));
       body.parameters.v4_prompt = {
         caption: {
           base_caption: params.prompt,
           char_captions: params.characterPrompts?.map((charPrompt, index) => ({
             char_caption: charPrompt,
-            centers: [params.characterPositions?.[index] ?? center],
+            centers: [charaPos(index)],
           })) ?? [],
         },
         use_coords: params.useCoords,
@@ -220,7 +222,7 @@ export class NovelAiImageGenService implements ImageGenService {
           base_caption: params.uc,
           char_captions: params.characterUCs?.map((charUC, index) => ({
             char_caption: charUC,
-            centers: [params.characterPositions?.[index] ?? center],
+            centers: [charaPos(index)],
           })) ?? [],
         },
       };
