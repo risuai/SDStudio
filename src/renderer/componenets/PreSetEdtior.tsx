@@ -1157,13 +1157,13 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
                       step="0.01"
                       min="0"
                       max="1"
-                      value={character.position.x}
+                      value={character.position?.x}
                       onChange={(e) => updateCharacter(character.id, {
                         position: { ...character.position, x: parseFloat(e.target.value) }
                       })}
                     />
                     <div className="w-11 flex-none text-lg text-center back-lllgray">
-                      {character.position.x.toFixed(2)}
+                      {character.position?.x?.toFixed(2)}
                     </div>
                   </div>
                   <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
@@ -1176,13 +1176,13 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
                       step="0.01"
                       min="0"
                       max="1"
-                      value={character.position.y}
+                      value={character.position?.y}
                       onChange={(e) => updateCharacter(character.id, {
                         position: { ...character.position, y: parseFloat(e.target.value) }
                       })}
                     />
                     <div className="w-11 flex-none text-lg text-center back-lllgray">
-                      {character.position.y.toFixed(2)}
+                      {character.position?.y?.toFixed(2)}
                     </div>
                   </div>
                 </div>
