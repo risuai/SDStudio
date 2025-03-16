@@ -117,6 +117,7 @@ export interface ImageGenInput {
   seed?: number;
   originalImage?: boolean;
   useCoords?: boolean;
+  legacyPromptConditioning?: boolean;
   characterPrompts?: string[];
   characterUCs?: string[];
   characterPositions?: CharacterPosition[];

@@ -62,6 +62,7 @@ export interface SDAbstractJob<T> extends AbstractJob {
   uc: string;
   characterPrompts: CharacterPrompt[];
   useCoords: boolean,
+  legacyPromptConditioning: boolean;
   noiseSchedule: string;
   backend: ModelBackend;
   vibes: IVibeItem[];

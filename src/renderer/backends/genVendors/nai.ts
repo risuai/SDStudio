@@ -196,6 +196,11 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.enable_hr = undefined;
       body.parameters.enable_AD = undefined;
 
+      body.parameters.naid4_addict = {
+        naid4_legacy_uc: params.legacyPromptConditioning
+      }
+      body.parameters.legacy_uc = params.legacyPromptConditioning
+
       const center = { x: 0.5, y: 0.5 };
       const charaPos = (index: number) => params.useCoords ?
         params.characterPositions?.[index] ?? center
@@ -225,6 +230,7 @@ export class NovelAiImageGenService implements ImageGenService {
             centers: [charaPos(index)],
           })) ?? [],
         },
+        legacy_uc: params.legacyPromptConditioning,
       };
     }
 
