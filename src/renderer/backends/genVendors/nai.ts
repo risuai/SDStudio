@@ -196,6 +196,9 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.enable_hr = undefined;
       body.parameters.enable_AD = undefined;
 
+      if (params.sampling == Sampling.KEulerAncestral)
+        body.parameters.deliberate_euler_ancestral_bug = false
+
       body.parameters.naid4_addict = {
         naid4_legacy_uc: params.legacyPromptConditioning
       }
