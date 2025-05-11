@@ -6,6 +6,12 @@ export enum Model {
   I2I = 'i2i',
 }
 
+export enum ModelVersion {
+  V4_5Curated = '4-5-curated',
+  V4 = '4-full',
+  V4Curated = '4-curated',
+}
+
 export enum Resolution {
   SmallLandscape = 'small_landscape',
   SmallPortrait = 'small_portrait',

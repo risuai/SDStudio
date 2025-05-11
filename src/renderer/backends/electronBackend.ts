@@ -24,6 +24,7 @@ class ElectronFetcher implements NovelAiFetcher {
     });
     clearTimeout(timeoutId);
     if (!response.ok) {
+      console.error(await response.json())
       throw new Error(`Failed to fetch: ${response.status}`);
     }
     return new Uint8Array(await response.arrayBuffer());

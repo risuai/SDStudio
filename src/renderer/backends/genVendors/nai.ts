@@ -5,6 +5,7 @@ import {
   ImageGenInput,
   ImageGenService,
   ImageAugmentInput,
+  ModelVersion,
 } from '../imageGen';
 
 import JSZip from 'jszip';
@@ -28,13 +29,17 @@ export class NovelAiImageGenService implements ImageGenService {
     this.fetcher = fetcher;
   }
 
-  private translateModel(model: Model): string {
+  private translateModel(model: Model, version: ModelVersion): string {
     const modelMap = {
-      anime: 'nai-diffusion-4-full',
-      inpaint: 'nai-diffusion-3-inpainting',
-      i2i: 'nai-diffusion-4-full',
+      anime: `nai-diffusion-${version}`,
+      inpaint: `nai-diffusion-${version}-inpainting`,
+      i2i: `nai-diffusion-${version}`,
     } as const;
-    return modelMap[model];
+    const resultModel = modelMap[model];
+
+    if (version === ModelVersion.V4Curated && model.match(/anime|i2i/))
+      return resultModel + '-preview';
+    return resultModel;
   }
 
   private translateSampling(sampling: Sampling): string {
@@ -97,16 +102,12 @@ export class NovelAiImageGenService implements ImageGenService {
   }
 
   public async generateImage(authorization: string, params: ImageGenInput) {
-    let modelValue = this.translateModel(params.model);
     const resolutionValue = params.resolution;
     const samplingValue = this.translateSampling(params.sampling);
 
     const config = await backend.getConfig();
-    if (config.useCuratedModel) {
-      if (params.model === Model.Anime) {
-        modelValue = 'nai-diffusion-4-curated-preview';
-      }
-    }
+
+    let modelValue = this.translateModel(params.model, config.modelVersion ?? ModelVersion.V4_5Curated);
 
     const seed = params.seed ?? this.getRandomInt(1, 2100000000);
     let action = undefined;

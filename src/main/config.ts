@@ -1,3 +1,5 @@
+import { ModelVersion } from "../renderer/backends/imageGen";
+
 export type ImageEditor = 'photoshop' | 'gimp' | 'mspaint';
 
 export type ModelType = 'fast' | 'quality';
@@ -21,5 +23,5 @@ export interface Config {
   uuid?: string;
   whiteMode?: boolean;
   disableQuality?: boolean;
-  useCuratedModel?: boolean;
+  modelVersion?: ModelVersion;
 }

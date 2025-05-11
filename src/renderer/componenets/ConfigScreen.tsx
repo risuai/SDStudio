@@ -10,6 +10,7 @@ import {
 import { Config, ImageEditor, RemoveBgQuality } from '../../main/config';
 import { observer } from 'mobx-react-lite';
 import { appState } from '../models/AppService';
+import { ModelVersion } from '../backends/imageGen';
 
 interface ConfigScreenProps {
   onSave: () => void;
@@ -22,7 +23,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
   const [whiteMode, setWhiteMode] = useState(false);
   const [noIpCheck, setNoIpCheck] = useState(false);
   const [disableQuality, setDisableQuality] = useState(false);
-  const [curatedModel, setCuratedModel] = useState(false);
+  const [modelVersion, setModelVersion] = useState(ModelVersion.V4_5Curated);
   const [useLocalBgRemoval, setUseLocalBgRemoval] = useState(false);
   const [refreshImage, setRefreshImage] = useState(false);
   const [ready, setReady] = useState(false);
@@ -43,7 +44,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
       setRefreshImage(config.refreshImage ?? false);
       setUseLocalBgRemoval(config.useLocalBgRemoval ?? false);
       setDisableQuality(config.disableQuality ?? false);
-      setCuratedModel(config.useCuratedModel ?? false);
+      setModelVersion(config.modelVersion ?? ModelVersion.V4_5Curated);
     })();
     const checkReady = () => {
       setReady(localAIService.ready);
@@ -314,14 +315,19 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
           />
         </div>
         <div className="mt-4 flex items-center gap-2">
-          <label htmlFor="whiteMode" className="text-sm gray-label">
-            NAI V4 Curated 모델 사용
+          <label htmlFor="modelVersion" className="block text-sm gray-label">
+            NAI 모델 버전 선택
           </label>
-          <input
-            type="checkbox"
-            checked={curatedModel}
-            onChange={(e) => setCuratedModel(e.target.checked)}
-          />
+          <select
+            id="modelVersion"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            value={modelVersion}
+            onChange={(e) => setModelVersion(e.target.value as ModelVersion)}
+          >
+            <option value={ModelVersion.V4_5Curated}>NAI V4.5 Curated</option>
+            <option value={ModelVersion.V4}>NAI V4 Full</option>
+            <option value={ModelVersion.V4Curated}>NAI V4 Curated</option>
+          </select>
         </div>
         <button
           className="mt-4 w-full back-sky py-2 rounded hover:brightness-95 active:brightness-90"
@@ -337,7 +343,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
               disableQuality: disableQuality,
               whiteMode: whiteMode,
               useLocalBgRemoval: useLocalBgRemoval,
-              useCuratedModel: curatedModel,
+              modelVersion: modelVersion,
             };
             await backend.setConfig(config);
             if (old.useCUDA !== useGPU) localAIService.modelChanged();
