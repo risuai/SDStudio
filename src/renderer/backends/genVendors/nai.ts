@@ -149,7 +149,6 @@ export class NovelAiImageGenService implements ImageGenService {
         strength: params.imageStrength,
         qualityToggle: config.disableQuality ? false : true,
         reference_image_multiple: [],
-        reference_information_extracted_multiple: [],
         reference_strength_multiple: [],
         legacy: false,
         legacy_v3_extend: false,
@@ -158,14 +157,24 @@ export class NovelAiImageGenService implements ImageGenService {
       },
     };
     if (params.vibes.length) {
-      body.parameters.reference_image_multiple = params.vibes.map(
-        (v) => v.image,
-      );
-      body.parameters.reference_information_extracted_multiple =
-        params.vibes.map((v) => v.info);
       body.parameters.reference_strength_multiple = params.vibes.map(
         (v) => v.strength,
       );
+      body.parameters.normalize_reference_strength_multiple = true;
+
+      for (const v of params.vibes) {
+        const url = 'https://image.novelai.net/ai/encode-vibe';
+        const payload = {
+          image: v.image,
+          model: modelValue,
+        }
+        const headers = {
+          Authorization: `Bearer ${authorization}`,
+          'Content-Type': 'application/json',
+        }
+        const vibeResponse = await this.fetcher.fetchArrayBuffer(url, payload, headers);
+        body.parameters.reference_image_multiple.push(Buffer.from(vibeResponse).toString('base64'))
+      }
     }
     if (params.image) {
       body.parameters.image = params.image;
