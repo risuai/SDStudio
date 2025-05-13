@@ -167,6 +167,7 @@ export class NovelAiImageGenService implements ImageGenService {
         const payload = {
           image: v.image,
           model: modelValue,
+          information_extracted: v.info,
         }
         const headers = {
           Authorization: `Bearer ${authorization}`,
