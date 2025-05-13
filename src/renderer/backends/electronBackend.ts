@@ -1,5 +1,5 @@
 import { Config } from '../../main/config';
-import { ImageAugmentInput, ImageGenInput, ImageGenService } from './imageGen';
+import { EncodeVibeImageInput, ImageAugmentInput, ImageGenInput, ImageGenService } from './imageGen';
 import { Backend, FileEntry, ResizeImageInput } from '../backend';
 import { NovelAiFetcher, NovelAiImageGenService } from './genVendors/nai';
 import { ImageContextAlt, SceneContextAlt } from '../models/types';
@@ -74,6 +74,11 @@ export class ElectornBackend extends Backend {
   async login(email: string, password: string): Promise<void> {
     const token = await this.imageGenService.login(email, password);
     await this.writeFile('TOKEN.txt', token.accessToken);
+  }
+
+  async encodeVibeImage(arg: EncodeVibeImageInput): Promise<string> {
+    const token = await this.readFile('TOKEN.txt');
+    return await this.imageGenService.encodeVibeImage(token, arg);
   }
 
   async showFile(arg: string): Promise<void> {

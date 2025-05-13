@@ -146,9 +146,15 @@ export interface ImageAugmentInput {
   image: string;
 }
 
+export interface EncodeVibeImageInput {
+  image: string;
+  info: number;
+}
+
 export interface ImageGenService {
   login(email: string, password: string): Promise<{ accessToken: string }>;
   generateImage(token: string, params: ImageGenInput): Promise<string>;
   augmentImage(token: string, params: ImageAugmentInput): Promise<string>;
   getRemainCredits(token: string): Promise<number>;
+  encodeVibeImage(token: string, params: EncodeVibeImageInput): Promise<string>;
 }

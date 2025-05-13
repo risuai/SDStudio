@@ -22,12 +22,14 @@ export interface IVibeItem {
   path: string;
   info: number;
   strength: number;
+  encoded: string;
 }
 
 export class VibeItem implements IVibeItem {
   @observable accessor path: string = '';
   @observable accessor info: number = 0;
   @observable accessor strength: number = 0;
+  @observable accessor encoded: string = '';
 
   static fromJSON(json: IVibeItem): VibeItem {
     const item = new VibeItem();
@@ -40,6 +42,7 @@ export class VibeItem implements IVibeItem {
       path: this.path,
       info: this.info,
       strength: this.strength,
+      encoded: this.encoded,
     };
   }
 }

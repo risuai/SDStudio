@@ -3,7 +3,7 @@ import { FloatView } from './FloatView';
 import ConfigScreen from './ConfigScreen';
 import SessionSelect from './SessionSelect';
 import { Session } from '../models/types';
-import { loginService, backend, taskQueueService } from '../models';
+import { loginService, backend, taskQueueService, imageService } from '../models';
 
 const TobBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -22,9 +22,11 @@ const TobBar = () => {
     onChange();
     loginService.addEventListener('change', onChange);
     taskQueueService.addEventListener('complete', onChange);
+    imageService.addEventListener('encode-vibe', onChange);
     return () => {
       loginService.removeEventListener('change', onChange);
       taskQueueService.removeEventListener('complete', onChange);
+      imageService.removeEventListener('encode-vibe', onChange);
     };
   }, []);
 

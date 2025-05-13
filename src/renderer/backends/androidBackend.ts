@@ -1,5 +1,5 @@
 import { Config } from '../../main/config';
-import { ImageAugmentInput, ImageGenInput, ImageGenService } from './imageGen';
+import { EncodeVibeImageInput, ImageAugmentInput, ImageGenInput, ImageGenService } from './imageGen';
 import {
   Backend,
   FileEntry,
@@ -183,6 +183,12 @@ export class AndroidBackend extends Backend {
   async login(email: string, password: string): Promise<void> {
     const token = await this.imageGenService.login(email, password);
     await this.writeFile('TOKEN.txt', token.accessToken);
+  }
+
+  async encodeVibeImage(arg: EncodeVibeImageInput): Promise<string> {
+    const token = await this.readFile('TOKEN.txt');
+    const res = await this.imageGenService.encodeVibeImage(token, arg);
+    return res;
   }
 
   async showFile(arg: string): Promise<void> {

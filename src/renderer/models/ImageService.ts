@@ -459,6 +459,18 @@ export class ImageService extends EventTarget {
       }),
     );
   }
+
+  async encodeVibeImage(session: Session, path: string, info: number) {
+    const vibePath = this.getVibeImagePath(session, path);
+    const data = await this.fetchVibeImage(session, vibePath);
+    if (!data) return
+    const encoded = await backend.encodeVibeImage({
+      image: dataUriToBase64(data),
+      info: info,
+    });
+    this.dispatchEvent(new CustomEvent('encode-vibe', {}));
+    return encoded;
+  }
 }
 
 export function base64ToDataUri(data: string) {

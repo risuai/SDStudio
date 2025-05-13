@@ -1,5 +1,5 @@
 import { Config } from '../main/config';
-import { ImageAugmentInput, ImageGenInput } from './backends/imageGen';
+import { EncodeVibeImageInput, ImageAugmentInput, ImageGenInput } from './backends/imageGen';
 
 export interface FileEntry {
   name: string;
@@ -27,6 +27,7 @@ export abstract class Backend {
   abstract generateImage(arg: ImageGenInput): Promise<void>;
   abstract augmentImage(arg: ImageAugmentInput): Promise<void>;
   abstract login(email: string, password: string): Promise<void>;
+  abstract encodeVibeImage(arg: EncodeVibeImageInput): Promise<string>;
   abstract showFile(arg: string): Promise<void>;
   abstract copyToDownloads(path: string): Promise<void>;
   abstract zipFiles(files: FileEntry[], outPath: string): Promise<void>;

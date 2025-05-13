@@ -6,6 +6,7 @@ import {
   ImageGenService,
   ImageAugmentInput,
   ModelVersion,
+  EncodeVibeImageInput,
 } from '../imageGen';
 
 import JSZip from 'jszip';
@@ -161,21 +162,7 @@ export class NovelAiImageGenService implements ImageGenService {
         (v) => v.strength,
       );
       body.parameters.normalize_reference_strength_multiple = true;
-
-      for (const v of params.vibes) {
-        const url = 'https://image.novelai.net/ai/encode-vibe';
-        const payload = {
-          image: v.image,
-          model: modelValue,
-          information_extracted: v.info,
-        }
-        const headers = {
-          Authorization: `Bearer ${authorization}`,
-          'Content-Type': 'application/json',
-        }
-        const vibeResponse = await this.fetcher.fetchArrayBuffer(url, payload, headers);
-        body.parameters.reference_image_multiple.push(Buffer.from(vibeResponse).toString('base64'))
-      }
+      body.parameters.reference_image_multiple = params.vibes.map((v) => v.image)
     }
     if (params.image) {
       body.parameters.image = params.image;
@@ -324,5 +311,27 @@ export class NovelAiImageGenService implements ImageGenService {
 
     const imageEntry = zip.file(zipEntries[zipEntries.length - 1])!;
     return await imageEntry.async('base64');
+  }
+
+  async encodeVibeImage(authorization: string, params: EncodeVibeImageInput) {
+    const url = this.apiEndpoint2;
+    const config = await backend.getConfig();
+    const modelValue = this.translateModel(Model.Anime, config.modelVersion ?? ModelVersion.V4);
+    const body = {
+      image: params.image,
+      model: modelValue,
+      information_extracted: params.info,
+    };
+    const headers = {
+      Authorization: `Bearer ${authorization}`,
+      'Content-Type': 'application/json',
+    };
+
+    const arrayBuffer = await this.fetcher.fetchArrayBuffer(
+      url + '/ai/encode-vibe',
+      body,
+      headers,
+    );
+    return Buffer.from(arrayBuffer).toString('base64');
   }
 }
