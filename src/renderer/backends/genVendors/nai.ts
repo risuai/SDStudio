@@ -135,12 +135,10 @@ export class NovelAiImageGenService implements ImageGenService {
         controlnet_strength: 1,
         dynamic_thresholding: false,
         scale: params.promptGuidance,
-        uncond_scale: 1,
         sampler: samplingValue,
         steps: params.steps,
         noise: params.noise,
         seed: seed,
-        extra_noise_seed: seed,
         n_samples: 1,
         ucPreset: 3,
         sm: params.sampling === Sampling.DDIM ? false : params.sm,
@@ -161,7 +159,7 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.reference_strength_multiple = params.vibes.map(
         (v) => v.strength,
       );
-      body.parameters.normalize_reference_strength_multiple = true;
+      body.parameters.normalize_reference_strength_multiple = params.normalizeStrength;
       body.parameters.reference_image_multiple = params.vibes.map((v) => v.image)
     }
     if (params.image) {
