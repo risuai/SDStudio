@@ -183,7 +183,7 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-auto">
             {getField().map((vibe: VibeItem) => (
-              <div className="border border-gray-300 mt-2 p-2 flex gap-2 items-begin">
+              <div key={vibe.path} className="border border-gray-300 mt-2 p-2 flex gap-2 items-begin">
                 <VibeImage
                   path={
                     vibe.path &&
