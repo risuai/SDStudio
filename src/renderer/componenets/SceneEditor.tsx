@@ -93,6 +93,8 @@ interface BigPromptEditorProps {
   general: boolean;
   getMiddlePrompt: () => string;
   setMiddlePrompt: (txt: string) => void;
+  getCharacterMiddlePrompt?: (index: number) => string;
+  setCharacterMiddlePrompt?: (index: number, txt: string) => void;
   queuePrompt: (middle: string, callback: (path: string) => void) => void;
   setMainImage?: (path: string) => void;
   initialImagePath?: string;
@@ -107,6 +109,8 @@ export const BigPromptEditor = observer(
     meta,
     getMiddlePrompt,
     setMiddlePrompt,
+    getCharacterMiddlePrompt,
+    setCharacterMiddlePrompt,
     initialImagePath,
     queuePrompt,
     setMainImage,
@@ -168,6 +172,8 @@ export const BigPromptEditor = observer(
               middlePromptMode={true}
               getMiddlePrompt={getMiddlePrompt}
               onMiddlePromptChange={setMiddlePrompt}
+              getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+              onCharacterMiddlePromptChange={setCharacterMiddlePrompt}
             />
           </FloatView>
         )}
@@ -186,6 +192,8 @@ export const BigPromptEditor = observer(
               middlePromptMode={true}
               getMiddlePrompt={getMiddlePrompt}
               onMiddlePromptChange={setMiddlePrompt}
+              getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+              onCharacterMiddlePromptChange={setCharacterMiddlePrompt}
             />
           </div>
           <div className="h-full flex flex-col p-2 overflow-hidden block md:hidden">
@@ -482,6 +490,20 @@ const SceneEditor = observer(({ scene, onClosed, onDeleted }: Props) => {
     scene.slots[0][0].prompt = txt;
   };
 
+  const getCharacterMiddlePrompt = (index: number) => {
+    if (scene.slots.length === 0 || scene.slots[0].length === 0) {
+      return '';
+    }
+    return scene.slots[0][0].characterPrompts[index] || '';
+  }
+
+  const onCharacterMiddlePromptChange = (index: number, txt: string) => {
+    if (scene.slots.length === 0 || scene.slots[0].length === 0) {
+      return;
+    }
+    scene.slots[0][0].characterPrompts[index] = txt;
+  }
+
   const queuePrompt = async (
     middle: string,
     callback: (path: string) => void,
@@ -552,6 +574,8 @@ const SceneEditor = observer(({ scene, onClosed, onDeleted }: Props) => {
       meta={type && scene.meta.get(type)}
       getMiddlePrompt={getMiddlePrompt}
       setMiddlePrompt={onMiddlePromptChange}
+      getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+      setCharacterMiddlePrompt={onCharacterMiddlePromptChange}
       queuePrompt={queuePrompt}
       setMainImage={setMainImage}
       initialImagePath={getMainImagePath(curSession!, scene)}

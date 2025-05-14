@@ -182,7 +182,6 @@ export const getSceneKey = (session: Session, scene: GenericScene) => {
 };
 
 async function handleNAIDelay(numTry: number, fast: boolean, delayTime: number) {
-  console.log('handleNAIDelay', numTry, fast, delayTime);
   if (numTry === 0 && fast) {
     await sleep(delayTime);
   } else if (numTry <= 2 && fast) {
@@ -200,7 +199,6 @@ async function handleNAIDelay(numTry: number, fast: boolean, delayTime: number) 
       );
     }
   }
-  console.log('handleNAIDelay done');
   return;
 }
 

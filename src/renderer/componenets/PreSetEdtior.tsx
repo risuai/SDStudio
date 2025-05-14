@@ -845,6 +845,8 @@ interface IWFElementContext {
   setShowGroup: (group: string | undefined) => void;
   getMiddlePrompt?: () => string;
   onMiddlePromptChange?: (txt: string) => void;
+  getCharacterMiddlePrompt?: (index: number) => string;
+  onCharacterMiddlePromptChange?: (index: number, txt: string) => void;
 }
 
 interface WFElementProps {
@@ -1054,6 +1056,8 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
     editCharacters, 
     setEditCharacters,
     middlePromptMode,
+    getCharacterMiddlePrompt,
+    onCharacterMiddlePromptChange
   } = useContext(WFElementContext)!;
 
   const getField = () => {
@@ -1101,7 +1105,7 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
     <div className="w-full h-full overflow-hidden flex flex-col">
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-auto">
-          {getField().map((character: CharacterPrompt) => (
+          {getField().map((character: CharacterPrompt, i: number) => (
             <div key={character.id} className="border rounded-md mt-3 p-3">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2 gray-label">
@@ -1129,6 +1133,10 @@ const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) =>
                   </div>
                 </div>
                 <div className='mb-2'>
+                  <PromptEditTextArea
+                    value={getCharacterMiddlePrompt!(i)}
+                    onChange={(value) => onCharacterMiddlePromptChange!(i, value)}
+                  />
                 </div>
               </>)}
               <div className="flex justify-between items-center mb-2">
@@ -1405,6 +1413,8 @@ interface ImplProps {
   element: WFIElement;
   getMiddlePrompt?: () => string;
   onMiddlePromptChange?: (txt: string) => void;
+  getCharacterMiddlePrompt?: (index: number) => string;
+  onCharacterMiddlePromptChange?: (index: number, txt: string) => void;
 }
 
 export const PreSetEditorImpl = observer(
@@ -1417,6 +1427,8 @@ export const PreSetEditorImpl = observer(
     middlePromptMode,
     getMiddlePrompt,
     onMiddlePromptChange,
+    getCharacterMiddlePrompt,
+    onCharacterMiddlePromptChange,
   }: ImplProps) => {
     const [editVibe, setEditVibe] = useState<WFIInlineInput | undefined>(
       undefined,
@@ -1445,6 +1457,8 @@ export const PreSetEditorImpl = observer(
             middlePromptMode,
             getMiddlePrompt,
             onMiddlePromptChange,
+            getCharacterMiddlePrompt,
+            onCharacterMiddlePromptChange,
           }}
         >
           <WFGroupContext.Provider value={{}}>
@@ -1476,6 +1490,8 @@ interface InnerProps {
   nopad?: boolean;
   getMiddlePrompt?: () => string;
   onMiddlePromptChange?: (txt: string) => void;
+  getCharacterMiddlePrompt?: (index: number) => string;
+  onCharacterMiddlePromptChange?: (index: number, txt: string) => void;
 }
 
 interface UnionProps {
@@ -1487,6 +1503,8 @@ interface UnionProps {
   middlePromptMode: boolean;
   getMiddlePrompt?: () => string;
   onMiddlePromptChange?: (txt: string) => void;
+  getCharacterMiddlePrompt?: (index: number) => string;
+  onCharacterMiddlePromptChange?: (index: number, txt: string) => void;
 }
 
 export const InnerPreSetEditor = observer(
@@ -1499,6 +1517,8 @@ export const InnerPreSetEditor = observer(
     middlePromptMode,
     getMiddlePrompt,
     onMiddlePromptChange,
+    getCharacterMiddlePrompt,
+    onCharacterMiddlePromptChange,
     nopad,
   }: InnerProps) => {
     return (
@@ -1512,6 +1532,8 @@ export const InnerPreSetEditor = observer(
           middlePromptMode={middlePromptMode}
           getMiddlePrompt={getMiddlePrompt}
           onMiddlePromptChange={onMiddlePromptChange}
+          getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+          onCharacterMiddlePromptChange={onCharacterMiddlePromptChange}
         />
       </VerticalStack>
     );
@@ -1523,6 +1545,8 @@ interface Props {
   middlePromptMode: boolean;
   getMiddlePrompt?: () => string;
   onMiddlePromptChange?: (txt: string) => void;
+  getCharacterMiddlePrompt?: (index: number) => string;
+  onCharacterMiddlePromptChange?: (index: number, txt: string) => void;
 }
 
 const PreSetEditor = observer(
@@ -1530,6 +1554,8 @@ const PreSetEditor = observer(
     middlePromptMode,
     getMiddlePrompt,
     onMiddlePromptChange,
+    getCharacterMiddlePrompt,
+    onCharacterMiddlePromptChange,
     meta,
   }: Props) => {
     const [_, rerender] = useState<{}>({});
@@ -1603,6 +1629,8 @@ const PreSetEditor = observer(
             element={workFlowService.getGeneralEditor(workflowType)}
             getMiddlePrompt={getMiddlePrompt}
             onMiddlePromptChange={onMiddlePromptChange}
+            getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+            onCharacterMiddlePromptChange={onCharacterMiddlePromptChange}
           />
         </VerticalStack>
       )
@@ -1620,6 +1648,8 @@ export const UnionPreSetEditor = observer(
     middlePromptMode,
     getMiddlePrompt,
     onMiddlePromptChange,
+    getCharacterMiddlePrompt,
+    onCharacterMiddlePromptChange,
   }: UnionProps) => {
     return general ? (
       <PreSetEditor
@@ -1627,6 +1657,8 @@ export const UnionPreSetEditor = observer(
         middlePromptMode={middlePromptMode}
         getMiddlePrompt={getMiddlePrompt}
         onMiddlePromptChange={onMiddlePromptChange}
+        getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+        onCharacterMiddlePromptChange={onCharacterMiddlePromptChange}
       />
     ) : (
       <InnerPreSetEditor
@@ -1638,6 +1670,8 @@ export const UnionPreSetEditor = observer(
         middlePromptMode={middlePromptMode}
         getMiddlePrompt={getMiddlePrompt}
         onMiddlePromptChange={onMiddlePromptChange}
+        getCharacterMiddlePrompt={getCharacterMiddlePrompt}
+        onCharacterMiddlePromptChange={onCharacterMiddlePromptChange}
       />
     );
   },
