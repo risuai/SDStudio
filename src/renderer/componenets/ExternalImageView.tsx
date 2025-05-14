@@ -25,6 +25,7 @@ export const ExternalImageView = observer(
         if (!newJob) return;
         newJob.prompt = newJob.prompt ?? '';
         newJob.uc = newJob.uc ?? '';
+        newJob.characterPrompts = newJob.characterPrompts ?? [];
         setJob(newJob);
       })();
     }, [image]);
@@ -66,6 +67,9 @@ export const ExternalImageView = observer(
       preset.noiseSchedule = job.noiseSchedule ?? 'native';
       preset.promptGuidance = job.promptGuidance ?? 5;
       preset.cfgRescale = job.cfgRescale ?? 0;
+      preset.useCoords = job.useCoords ?? false;
+      preset.legacyPromptConditioning = job.legacyPromptConditioning ?? false;
+      preset.characterPrompts = job.characterPrompts ?? [];
       appState.curSession!.addPreset(preset);
       appState.curSession!.selectedWorkflow = {
         workflowType: preset.type,
@@ -74,8 +78,8 @@ export const ExternalImageView = observer(
       onClose();
     };
     return (
-      <div className="z-10 bg-white dark:bg-slate-900 w-full h-full flex overflow-hidden flex-col md:flex-row">
-        <div className="flex-none md:w-1/3 p-2 md:p-4">
+      <div className="z-10 bg-white dark:bg-slate-900 w-full h-full flex overflow-auto flex-col md:flex-row">
+        <div className="flex-none md:w-1/3 p-2 md:p-4 overflow-y-auto">
           <div className="flex gap-2 md:gap-3 mb-2 md:mb-6 flex-wrap w-full">
             <button
               className={`round-button back-sky`}
@@ -113,6 +117,20 @@ export const ExternalImageView = observer(
                     className="w-full h-24 overflow-auto"
                   />
                 </div>
+                {job.characterPrompts && job.characterPrompts.map((characterPrompt) => (
+                  <div key={characterPrompt.id} className="w-full mb-4 border border-gray-200 dark:border-gray-700 rounded-md p-3">
+                    <div className="gray-label">캐릭터 프롬프트</div>
+                    <PromptHighlighter
+                      text={characterPrompt.prompt}
+                      className="w-full h-24 overflow-auto"
+                    />
+                    <div className="gray-label">네거티브 프롬프트</div>
+                    <PromptHighlighter
+                      text={characterPrompt.uc}
+                      className="w-full h-24 overflow-auto"
+                    />
+                  </div>
+                ))}
                 <div className="w-full mb-2 text-sub">
                   <span className="gray-label">시드: </span>
                   {job.seed}
@@ -149,7 +167,7 @@ export const ExternalImageView = observer(
             )}
           </div>
         </div>
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
           {image && (
             <img
               src={base64ToDataUri(image)}

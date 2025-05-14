@@ -1,5 +1,5 @@
 import ExifReader from 'exifreader';
-import { SDAbstractJob, SDJob } from './types';
+import { CharacterPrompt, SDAbstractJob, SDJob } from './types';
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -68,6 +68,19 @@ export async function extractPromptDataFromBase64(
     const data = JSON.parse(comment.value as string);
 
     if (data['prompt']) {
+      const charPrompts = data['v4_prompt']['caption']['char_captions'].map((c: any) => c.char_caption)
+      const charPos = data['v4_prompt']['caption']['char_captions'].map((c: any) => c.centers[0])
+      const charUCs = data['v4_negative_prompt']['caption']['char_captions'].map((c: any) => c.char_caption)
+
+      const characterPrompts: CharacterPrompt[] = []
+      for (let i = 0; i < charPrompts.length; i++) {
+        characterPrompts.push({
+          id: `${i}`,
+          prompt: charPrompts[i],
+          position: charPos[i],
+          uc: charUCs[i],
+        });
+      }
       return {
         prompt: data['prompt'],
         seed: data['seed'],
@@ -80,7 +93,11 @@ export async function extractPromptDataFromBase64(
         dyn: data['sm_dyn'],
         smea: data['sm'],
         vibes: [],
+        normalizeStrength: false,
         backend: { type: 'NAI' },
+        useCoords: data['v4_prompt']['use_coords'],
+        legacyPromptConditioning: data['v4_negative_prompt']['legacy_uc'],
+        characterPrompts: characterPrompts,
       };
     }
   }
