@@ -177,6 +177,12 @@ export class ImageService extends EventTarget {
     return await this.fetchImage(path);
   }
 
+  async fetchEncodedVibeImage(session: Session, name: string, info: number) {
+    const path =
+      imageService.getEncodedVibesDir(session) + '/' + name.split('/').pop()! + '&info=' + info;
+    return await this.fetchImage(path);
+  }
+
   async writeVibeImage(session: Session, name: string, data: string) {
     const path =
       imageService.getVibesDir(session) + '/' + name.split('/').pop()!;
@@ -355,14 +361,28 @@ export class ImageService extends EventTarget {
     return 'vibes/' + session.name;
   }
 
+  getEncodedVibesDir(session: Session) {
+    return 'vibes/' + session.name + '/encoded';
+  }
+
   async storeVibeImage(session: Session, data: string) {
     const path = imageService.getVibesDir(session) + '/' + v4() + '.png';
     await backend.writeDataFile(path, data);
     return path.split('/').pop()!;
   }
 
+  async storeEncodedVibeImage(session: Session, name: string, data: string, info: number) {
+    const path = imageService.getEncodedVibesDir(session) + '/' + name + '&info=' + info;
+    await backend.writeDataFile(path, data);
+    return path.split('/').pop()!;
+  }
+
   getVibeImagePath(session: Session, name: string) {
     return imageService.getVibesDir(session) + '/' + name.split('/').pop()!;
+  }
+
+  getEncodedVibeImagePath(session: Session, name: string, info: number) {
+    return imageService.getEncodedVibesDir(session) + '/' + name.split('/').pop()! + '&info=' + info;
   }
 
   async refresh(
@@ -468,8 +488,14 @@ export class ImageService extends EventTarget {
       image: dataUriToBase64(data),
       info: info,
     });
+    await this.storeEncodedVibeImage(session, path, encoded, info);
     this.dispatchEvent(new CustomEvent('encode-vibe', {}));
     return encoded;
+  }
+
+  async checkEncodedVibeImage(session: Session, path: string, info: number) {
+    const vibePath = this.getEncodedVibeImagePath(session, path, info);
+    return await backend.existFile(vibePath);
   }
 }
 

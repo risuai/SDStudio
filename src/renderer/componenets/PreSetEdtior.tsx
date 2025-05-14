@@ -173,7 +173,7 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
     if (!vibe) return;
     const path = await imageService.storeVibeImage(curSession!, vibe);
     getField().push(
-      VibeItem.fromJSON({ path: path, info: 1.0, strength: 0.6, encoded: '' }),
+      VibeItem.fromJSON({ path: path, info: 1.0, strength: 0.6 }),
     );
   };
 
@@ -210,7 +210,6 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
                         value={vibe.info}
                         onChange={(e) => {
                           vibe.info = parseFloat(e.target.value);
-                          vibe.encoded = '';
                         }}
                         disabled={disabled}
                       />
@@ -245,20 +244,7 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex-none flex ml-auto mt-auto gap-2">
-                    <button
-                      className={
-                        `round-button h-8 px-8 ml-auto ` +
-                        (disabled || vibe.encoded ? 'back-gray' : 'back-green')
-                      }
-                      onClick={async () => {
-                        if (disabled || vibe.encoded) return;
-                        const encoded = await imageService.encodeVibeImage(curSession!, vibe.path, vibe.info);
-                        vibe.encoded = encoded ?? '';
-                      }}
-                    >
-                      {vibe.encoded ? '인코딩 완료' : '바이브 이미지 인코딩 필요'}
-                    </button>
+                  <div className="flex-none flex ml-auto mt-auto">
                     <button
                       className={
                         `round-button h-8 px-8 ml-auto ` +
