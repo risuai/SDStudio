@@ -24,4 +24,5 @@ export interface Config {
   whiteMode?: boolean;
   disableQuality?: boolean;
   modelVersion?: ModelVersion;
+  delayTime?: number;
 }

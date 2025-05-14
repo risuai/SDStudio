@@ -24,6 +24,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
   const [noIpCheck, setNoIpCheck] = useState(false);
   const [disableQuality, setDisableQuality] = useState(false);
   const [modelVersion, setModelVersion] = useState(ModelVersion.V4_5Curated);
+  const [delayTime, setDelayTime] = useState(0);
   const [useLocalBgRemoval, setUseLocalBgRemoval] = useState(false);
   const [refreshImage, setRefreshImage] = useState(false);
   const [ready, setReady] = useState(false);
@@ -45,6 +46,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
       setUseLocalBgRemoval(config.useLocalBgRemoval ?? false);
       setDisableQuality(config.disableQuality ?? false);
       setModelVersion(config.modelVersion ?? ModelVersion.V4_5Curated);
+      setDelayTime(config.delayTime ?? 0);
     })();
     const checkReady = () => {
       setReady(localAIService.ready);
@@ -329,6 +331,24 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
             <option value={ModelVersion.V4Curated}>NAI V4 Curated</option>
           </select>
         </div>
+        <div className="mt-4 flex items-center gap-2">
+          <label htmlFor="delayTime" className="block text-sm gray-label">
+            기본 지연 시간 조정 (0ms ~ 1000ms)
+          </label>
+          <input
+            type="range"
+            id="delayTime"
+            min={0}
+            max={1000}
+            step={1}
+            value={delayTime}
+            onChange={(e) => setDelayTime(parseInt(e.target.value))}
+            className="w-full"
+          />
+          <span className='text-sm gray-label'>
+            {delayTime}ms
+          </span>
+        </div>
         <button
           className="mt-4 w-full back-sky py-2 rounded hover:brightness-95 active:brightness-90"
           onClick={async () => {
@@ -344,6 +364,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
               whiteMode: whiteMode,
               useLocalBgRemoval: useLocalBgRemoval,
               modelVersion: modelVersion,
+              delayTime: delayTime,
             };
             await backend.setConfig(config);
             if (old.useCUDA !== useGPU) localAIService.modelChanged();
