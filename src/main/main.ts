@@ -400,12 +400,16 @@ async function openImageEditor(inputPath: string) {
     'C:\\Program Files\\Adobe\\Adobe Photoshop 2022\\Photoshop.exe',
     'C:\\Program Files\\Adobe\\Adobe Photoshop 2023\\Photoshop.exe',
     'C:\\Program Files\\Adobe\\Adobe Photoshop 2024\\Photoshop.exe',
+    'C:\\Program Files\\Adobe\\Adobe Photoshop 2025\\Photoshop.exe',
+    'C:\\Program Files\\Adobe\\Adobe Photoshop 2026\\Photoshop.exe',
     '/Applications/Adobe Photoshop CC 2019/Adobe Photoshop CC 2019.app',
     '/Applications/Adobe Photoshop CC 2020/Adobe Photoshop CC 2020.app',
     '/Applications/Adobe Photoshop CC 2021/Adobe Photoshop CC 2021.app',
     '/Applications/Adobe Photoshop 2022/Adobe Photoshop 2022.app',
     '/Applications/Adobe Photoshop 2023/Adobe Photoshop 2023.app',
     '/Applications/Adobe Photoshop 2024/Adobe Photoshop 2024.app',
+    '/Applications/Adobe Photoshop 2025/Adobe Photoshop 2025.app',
+    '/Applications/Adobe Photoshop 2026/Adobe Photoshop 2026.app',
   ];
 
   async function findPhotoshopPath(paths: string[]) {
