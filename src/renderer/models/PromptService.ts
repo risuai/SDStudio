@@ -5,6 +5,7 @@ import {
   PARR,
   PromptGroupNode,
   PromptNode,
+  PromptPiece,
   PromptRandomNode,
   Scene,
   Session,
@@ -164,49 +165,166 @@ export class PromptService extends EventTarget {
   }
 }
 
+/**
+ * Generic DFS traversal for prompt combinations
+ * @param session Current session
+ * @param scene Current scene
+ * @param collectFn Function to collect data from each slot piece
+ * @param processFn Function to process completed combinations
+ * @returns Result from the processFn
+ */
+async function dfsPrompts<T, R>(
+  session: Session,
+  scene: Scene,
+  collectFn: (piece: PromptPiece | null) => T,
+  processFn: (combinations: T[]) => Promise<R>,
+): Promise<R[]> {
+  const combinations: T[] = [];
+  const results: R[] = [];
+  
+  const traverse = async () => {
+    if (combinations.length === scene.slots.length) {
+      results.push(await processFn([...combinations]));
+      return;
+    }
+    
+    const level = combinations.length;
+    let hasEnabled = false;
+    
+    for (const piece of scene.slots[level]) {
+      if (piece.enabled === undefined || piece.enabled) {
+        hasEnabled = true;
+        combinations.push(collectFn(piece));
+        await traverse();
+        combinations.pop();
+      }
+    }
+    
+    // If specified by returning null/undefined from collectFn, handle empty slots
+    if (!hasEnabled && collectFn(null) !== undefined) {
+      combinations.push(collectFn(null));
+      await traverse();
+      combinations.pop();
+    }
+  };
+  
+  await traverse();
+  return results;
+}
+
 export const createSDPrompts = async (
   session: Session,
   preset: any,
   shared: any,
   scene: Scene,
 ) => {
-  const promptComb: string[] = [];
-  const res: PromptNode[] = [];
-  const dfs = async () => {
-    if (promptComb.length === scene.slots.length) {
-      let front = toPARR(preset.frontPrompt);
-      if (shared.type === 'SDImageGenEasy') {
-        front = front.concat(toPARR(shared.characterPrompt));
-        const newFront = [];
-        const rest = [];
-        const regex = /^\d+(boy|girl|other)s?$/;
-        for (const word of front) {
-          if (
-            regex.test(word) ||
-            word === 'multiple girls' ||
-            word === 'multiple boys' ||
-            word === 'multiple others'
-          ) {
+  return await dfsPrompts(session, scene, (piece) => piece?.prompt, async (promptComb) => {
+    let front = toPARR(preset.frontPrompt);
+    if (shared.type === 'SDImageGenEasy') {
+      front = front.concat(toPARR(shared.characterPrompt));
+      const newFront = [];
+      const rest = [];
+      const regex = /^\d+(boy|girl|other)s?$/;
+      for (const word of front) {
+        if (
+          regex.test(word) ||
+          word === 'multiple girls' ||
+          word === 'multiple boys' ||
+          word === 'multiple others'
+        ) {
+          newFront.push(word);
+        } else {
+          const tag = await backend.lookupTag(word);
+          if (tag && tag.category === 4) {
             newFront.push(word);
           } else {
-            const tag = await backend.lookupTag(word);
-            if (tag && tag.category === 4) {
-              newFront.push(word);
-            } else {
-              rest.push(word);
-            }
+            rest.push(word);
           }
         }
-        front = newFront.concat(rest);
       }
+      front = newFront.concat(rest);
+    }
+
+    let middle: string[] = [];
+    for (const comb of promptComb) {
+      middle = middle.concat(toPARR(comb ?? ''));
+    }
+
+    let left = 0, right = 0;
+    let cur: string[] = [];
+    let currentInsert = 0;
+
+    while (left < front.length && right < middle.length) {
+      if (currentInsert === 0) {
+        if (front[left] === '|') {
+          currentInsert = 1;
+          left++;
+          continue;
+        }
+        cur.push(front[left]);
+        left++;
+      } else {
+        if (middle[right] === '|') {
+          currentInsert = 0;
+          right++;
+          continue;
+        }
+        cur.push(middle[right]);
+        right++;
+      }
+    }
+    while (left < front.length) {
+      if (front[left] !== '|') cur.push(front[left]);
+      left++;
+    }
+    while (right < middle.length) {
+      if (middle[right] !== '|') cur.push(middle[right]);
+      right++;
+    }
+
+    if (shared.type === 'SDImageGenEasy') {
+      cur = cur.concat(toPARR(shared.backgroundPrompt));
+    }
+    cur = cur.concat(toPARR(preset.backPrompt));
+
+    const newNode: PromptNode = {
+      type: 'group',
+      children: [],
+    };
+    for (const word of cur) {
+      newNode.children.push(promptService.parseWord(word, session, scene));
+    }
+    return newNode;
+  });
+};
+
+export const createSDCharacterPrompts = async (
+  session: Session,
+  preset: any,
+  shared: any,
+  scene: Scene,
+) => {
+  if (!preset.characterPrompts || preset.characterPrompts.length === 0) 
+    return [];
+
+  return await dfsPrompts(session, scene, (piece) => piece?.characterPrompts || [], async (promptComb) => {
+    const characterPromptsResult: PromptNode[] = [];
+    
+    for (let i = 0; i < preset.characterPrompts.length; i++) {
+      const characterPrompt = preset.characterPrompts[i];
+      const front = toPARR(characterPrompt.prompt);
+      
+      // Collect all character prompts from the selected pieces
       let middle: string[] = [];
       for (const comb of promptComb) {
-        middle = middle.concat(toPARR(comb));
+        middle = middle.concat(toPARR(comb[i] ?? ''));
       }
-      let left = 0,
-        right = 0;
+      
+      // Merge prompts with | separator
+      let left = 0, right = 0;
       let cur: string[] = [];
       let currentInsert = 0;
+      
       while (left < front.length && right < middle.length) {
         if (currentInsert === 0) {
           if (front[left] === '|') {
@@ -234,10 +352,7 @@ export const createSDPrompts = async (
         if (middle[right] !== '|') cur.push(middle[right]);
         right++;
       }
-      if (shared.type === 'SDImageGenEasy') {
-        cur = cur.concat(toPARR(shared.backgroundPrompt));
-      }
-      cur = cur.concat(toPARR(preset.backPrompt));
+      
       const newNode: PromptNode = {
         type: 'group',
         children: [],
@@ -245,20 +360,10 @@ export const createSDPrompts = async (
       for (const word of cur) {
         newNode.children.push(promptService.parseWord(word, session, scene));
       }
-      res.push(newNode);
-      return;
+      characterPromptsResult.push(newNode);
     }
-    const level = promptComb.length;
-    for (const piece of scene.slots[level]) {
-      if (piece.enabled == undefined || piece.enabled) {
-        promptComb.push(piece.prompt);
-        await dfs();
-        promptComb.pop();
-      }
-    }
-  };
-  await dfs();
-  return res;
+    return characterPromptsResult;
+  });
 };
 
 const mouth = ['<', '>', '(', ')', '{', '}', ')', '('];

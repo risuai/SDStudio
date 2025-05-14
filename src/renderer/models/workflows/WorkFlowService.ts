@@ -122,6 +122,25 @@ export class WorkFlowService {
     return await wf.def.createPrompt!(session, scene, preset, shared);
   }
 
+  async createCharacterPrompts(
+    type: string,
+    session: Session,
+    scene: GenericScene,
+    preset: any,
+    shared: any,
+  ) {
+    const wf = this.workflows.get(type);
+    if (!wf) {
+      throw new Error(`Unknown workflow type: ${type}`);
+    }
+    return await wf.def.createCharacterPrompts!(
+      session,
+      scene,
+      preset,
+      shared,
+    );
+  }
+
   createPreset(
     type: string,
     job: SDAbstractJob<string>,
@@ -140,6 +159,7 @@ export class WorkFlowService {
     session: Session,
     scene: GenericScene,
     prompt: PromptNode,
+    characterPrompts: PromptNode[],
     preset: any,
     shared: any,
     samples: number,
@@ -155,6 +175,7 @@ export class WorkFlowService {
       session,
       scene,
       prompt,
+      characterPrompts,
       preset,
       shared,
       samples,

@@ -182,6 +182,7 @@ export const getSceneKey = (session: Session, scene: GenericScene) => {
 };
 
 async function handleNAIDelay(numTry: number, fast: boolean, delayTime: number) {
+  console.log('handleNAIDelay', numTry, fast, delayTime);
   if (numTry === 0 && fast) {
     await sleep(delayTime);
   } else if (numTry <= 2 && fast) {
@@ -199,6 +200,7 @@ async function handleNAIDelay(numTry: number, fast: boolean, delayTime: number) 
       );
     }
   }
+  console.log('handleNAIDelay done');
   return;
 }
 
@@ -308,12 +310,10 @@ class GenerateImageTaskHandler implements TaskHandler {
       seed: job.seed,
     };
     if (this.type === 'gen' && job.characterPrompts?.length > 0) {
-      const scene = task.params.scene as Scene;
-      for (const characterPrompt of job.characterPrompts) {
-        const middle = scene.characterMiddlePrompt[characterPrompt.id] ?? '';
-        arg.characterPrompts?.push(characterPrompt.prompt + ',' + middle);
-        arg.characterUCs?.push(characterPrompt.uc);
-        arg.characterPositions?.push(characterPrompt.position);
+      for (const character of job.characterPrompts) {
+        arg.characterPrompts?.push(character.prompt);
+        arg.characterUCs?.push(character.uc);
+        arg.characterPositions?.push(character.position);
       }
     }
     if (this.type === 'inpaint') {
@@ -863,12 +863,14 @@ export const queueWorkflow = async (
 ) => {
   const [type, preset, shared, def] = session.getCommonSetup(workflow);
   const prompts = await def.createPrompt!(session, scene, preset, shared);
+  const characterPrompts = await def.createCharacterPrompts!(session, scene, preset, shared);
   const scene_ = scene as Scene;
-  for (const prompt of prompts) {
+  for (let i = 0; i < prompts.length; i++) {
     await def.handler(
       session,
       scene,
-      prompt,
+      prompts[i],
+      characterPrompts[i],
       preset,
       shared,
       samples,
@@ -891,6 +893,7 @@ export const queueI2IWorkflow = async (
     session,
     scene,
     { type: 'text', text: '' },
+    [],
     preset,
     undefined,
     samples,

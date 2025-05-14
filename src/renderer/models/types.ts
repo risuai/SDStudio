@@ -166,12 +166,14 @@ export class PieceLibrary implements IPieceLibrary {
 
 export interface IPromptPiece {
   prompt: string;
+  characterPrompts: string[];
   id: string;
   enabled?: boolean;
 }
 
 export class PromptPiece implements IPromptPiece {
   @observable accessor prompt: string = '';
+  @observable accessor characterPrompts: string[] = [];
   @observable accessor id: string = '';
   @observable accessor enabled: boolean | undefined = undefined;
 
@@ -184,6 +186,7 @@ export class PromptPiece implements IPromptPiece {
   toJSON(): IPromptPiece {
     return {
       prompt: this.prompt,
+      characterPrompts: this.characterPrompts,
       id: this.id,
       enabled: this.enabled,
     };
@@ -258,14 +261,12 @@ export interface IScene extends IAbstractScene {
   type: 'scene';
   slots: IPromptPieceSlot[];
   meta: Record<string, any>;
-  characterMiddlePrompt: Record<string, string>;
 }
 
 export class Scene extends AbstractScene implements IScene {
   @observable accessor type: 'scene' = 'scene';
   @observable accessor slots: PromptPieceSlot[] = [];
   @observable accessor meta: Map<string, any> = new Map();
-  @observable accessor characterMiddlePrompt: Record<string, string> = {};
 
   static fromJSON(json: IScene): Scene {
     const scene = new Scene();
@@ -275,7 +276,6 @@ export class Scene extends AbstractScene implements IScene {
       slot.map((piece) => PromptPiece.fromJSON(piece)),
     );
     scene.meta = new Map(Object.entries(json.meta ?? {}));
-    scene.characterMiddlePrompt = json.characterMiddlePrompt ?? {};
     return scene;
   }
 
@@ -285,7 +285,6 @@ export class Scene extends AbstractScene implements IScene {
       type: this.type,
       slots: this.slots.map((slot) => slot.map((piece) => piece.toJSON())),
       meta: Object.fromEntries(this.meta.entries()),
-      characterMiddlePrompt: this.characterMiddlePrompt,
     };
   }
 }

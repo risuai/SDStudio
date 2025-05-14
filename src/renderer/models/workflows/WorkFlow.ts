@@ -24,6 +24,7 @@ export interface WorkFlowDef {
   i2i: boolean;
   handler: WFHandler;
   createPrompt?: WFCreatePrompt;
+  createCharacterPrompts?: WFCreateCharacterPrompts;
   createPreset?: WFCreatePreset;
 }
 
@@ -31,6 +32,7 @@ export type WFHandler = (
   session: Session,
   scene: GenericScene,
   prompt: PromptNode,
+  characterPrompts: PromptNode[],
   preset: any,
   shared: any,
   samples: number,
@@ -45,6 +47,13 @@ export type WFCreatePrompt = (
   preset: any,
   shared: any,
 ) => PromptNode[] | Promise<PromptNode[]>;
+
+export type WFCreateCharacterPrompts = (
+  session: Session,
+  scene: GenericScene,
+  preset: any,
+  shared: any,
+) => PromptNode[][] | Promise<PromptNode[][]>;
 
 export type WFCreatePreset = (
   job: SDAbstractJob<string>,
@@ -620,6 +629,11 @@ export class WFDefBuilder {
 
   setCreatePrompt(createPrompt: WFCreatePrompt): this {
     this.workflowDef.createPrompt = createPrompt;
+    return this;
+  }
+
+  setCreateCharacterPrompts(createCharacterPrompts: WFCreateCharacterPrompts): this {
+    this.workflowDef.createCharacterPrompts = createCharacterPrompts;
     return this;
   }
 

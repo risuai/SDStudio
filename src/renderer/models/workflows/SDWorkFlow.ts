@@ -19,12 +19,15 @@ import {
   PromptNode,
   SDInpaintJob,
   SDI2IJob,
+  CharacterPrompt,
 } from '../types';
 import {
+  createSDCharacterPrompts,
   createSDPrompts,
   defaultBPrompt,
   defaultFPrompt,
   defaultUC,
+  lowerPromptNode,
 } from '../PromptService';
 import { imageService, taskQueueService, workFlowService } from '..';
 import { TaskParam } from '../TaskQueueService';
@@ -120,6 +123,7 @@ const SDImageGenHandler = async (
   session: Session,
   scene: GenericScene,
   prompt: PromptNode,
+  characterPrompts: PromptNode[],
   preset: any,
   shared: any,
   samples: number,
@@ -137,7 +141,10 @@ const SDImageGenHandler = async (
     prompt: prompt,
     sampling: preset.sampling,
     uc: preset.uc,
-    characterPrompts: preset.characterPrompts,
+    characterPrompts: preset.characterPrompts.map((p: CharacterPrompt, i: number) => ({
+      ...p,
+      prompt: lowerPromptNode(characterPrompts[i]),
+    })),
     useCoords: preset.useCoords,
     legacyPromptConditioning: preset.legacyPromptConditioning,
     normalizeStrength: preset.normalizeStrength,
@@ -169,6 +176,15 @@ const SDCreatePrompt = async (
   return await createSDPrompts(session, preset, shared, scene as Scene);
 };
 
+const SDCreateCharacterPrompts = async (
+  session: Session,
+  scene: GenericScene,
+  preset: any,
+  shared: any,
+) => {
+  return await createSDCharacterPrompts(session, preset, shared, scene as Scene);
+}
+
 export const SDImageGenDef = new WFDefBuilder('SDImageGen')
   .setTitle('이미지 생성')
   .setBackendType('image')
@@ -178,6 +194,7 @@ export const SDImageGenDef = new WFDefBuilder('SDImageGen')
   .setEditor(SDImageGenUI)
   .setHandler(SDImageGenHandler)
   .setCreatePrompt(SDCreatePrompt)
+  .setCreateCharacterPrompts(SDCreateCharacterPrompts)
   .build();
 
 export const SDImageGenEasyDef = new WFDefBuilder('SDImageGenEasy')
