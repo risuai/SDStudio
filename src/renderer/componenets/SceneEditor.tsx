@@ -21,8 +21,9 @@ import {
   FaStar,
   FaStop,
   FaTimes,
+  FaTrash,
+  FaUser,
 } from 'react-icons/fa';
-import { FaTrash } from 'react-icons/fa';
 import Denque from 'denque';
 import { writeFileSync } from 'original-fs';
 import { windowsStore } from 'process';
@@ -286,8 +287,76 @@ interface SlotPieceProps {
   style?: React.CSSProperties;
 }
 
+interface CharacterPromptsEditorProps {
+  piece: PromptPiece;
+  onClose: () => void;
+}
+
+const CharacterPromptsEditor = observer(({ piece, onClose }: CharacterPromptsEditorProps) => {
+  const addCharacterPrompt = () => {
+    piece.characterPrompts.push('');
+  };
+
+  const updatePrompt = (index: number, value: string) => {
+    piece.characterPrompts[index] = value;
+  };
+
+  const removePrompt = (index: number) => {
+    piece.characterPrompts.splice(index, 1);
+  };
+
+  return (
+    <div className="w-full h-full overflow-hidden flex flex-col p-3">
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-auto">
+          {piece.characterPrompts.length > 0 && (
+            piece.characterPrompts.map((prompt, index) => (
+              <div key={index} className="border rounded-md mt-3 p-3">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-2 gray-label">
+                    캐릭터 프롬프트
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="icon-button back-red"
+                      onClick={() => removePrompt(index)}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+                <div className='mb-2'>
+                  <PromptEditTextArea
+                    value={prompt}
+                    onChange={(value) => updatePrompt(index, value)}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+      <div className="flex-none mt-auto pt-2 flex gap-2 items-center">
+        <button
+          className="round-button back-green h-8"
+          onClick={addCharacterPrompt}
+        >
+          캐릭터 추가
+        </button>
+        <button 
+          className="round-button back-gray h-8 w-full"
+          onClick={onClose}
+        >
+          캐릭터 프롬프트 닫기
+        </button>
+      </div>
+    </div>
+  );
+});
+
 export const SlotPiece = observer(
   ({ scene, piece, removePiece, moveSlotPiece, style }: SlotPieceProps) => {
+    const [showCharacterPrompts, setShowCharacterPrompts] = useState(false);
     const [{ isDragging }, drag, preview] = useDrag(
       () => ({
         type: 'slot',
@@ -336,6 +405,18 @@ export const SlotPiece = observer(
           (isOver ? ' outline outline-sky-500' : '')
         }
       >
+        {showCharacterPrompts && (
+          <FloatView
+            priority={0}
+            onEscape={() => setShowCharacterPrompts(false)}
+          >
+            <CharacterPromptsEditor 
+              piece={piece} 
+              onClose={() => setShowCharacterPrompts(false)} 
+            />
+          </FloatView>
+        )}
+        
         <div className={'mb-3 h-12 w-28 md:h-24 md:w-48'}>
           <PromptEditTextArea
             whiteBg
@@ -357,6 +438,21 @@ export const SlotPiece = observer(
               piece.enabled = e.currentTarget.checked;
             }}
           />
+          <button
+            className="active:brightness-90 hover:brightness-95 text-blue-600 dark:text-blue-400"
+            title="캐릭터 프롬프트 편집"
+            onClick={() => {
+              if (!moveSlotPiece) return;
+              setShowCharacterPrompts(true);
+            }}
+          >
+            <FaUser size={20} />
+            {piece.characterPrompts.length > 0 && (
+              <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/3 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                {piece.characterPrompts.length}
+              </span>
+            )}
+          </button>
           <button
             className="active:brightness-90 hover:brightness-95 ml-auto text-red-500 dark:text-red-400"
             onClick={() => {

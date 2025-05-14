@@ -180,13 +180,17 @@ export class PromptPiece implements IPromptPiece {
   static fromJSON(json: IPromptPiece): PromptPiece {
     const promptPiece = new PromptPiece();
     Object.assign(promptPiece, json);
+    // Ensure characterPrompts is always an array
+    if (!Array.isArray(promptPiece.characterPrompts)) {
+      promptPiece.characterPrompts = [];
+    }
     return promptPiece;
   }
 
   toJSON(): IPromptPiece {
     return {
       prompt: this.prompt,
-      characterPrompts: this.characterPrompts,
+      characterPrompts: this.characterPrompts || [],
       id: this.id,
       enabled: this.enabled,
     };
