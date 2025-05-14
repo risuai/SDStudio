@@ -5,6 +5,7 @@ import { createSDPrompts } from '../PromptService';
 import { TaskParam } from '../TaskQueueService';
 import {
   AugmentJob,
+  CharacterPrompt,
   GenericScene,
   PromptNode,
   Scene,
@@ -117,6 +118,7 @@ const AugmentGenHandler = async (
   session: Session,
   scene: GenericScene,
   prompt: PromptNode,
+  characterPrompts: PromptNode[],
   preset: any,
   shared: any,
   samples: number,
@@ -136,6 +138,7 @@ const AugmentGenHandler = async (
     emotion: meta.emotion,
     weaken: shared.weaken,
     prompt: prompt,
+    characterPrompts: characterPrompts,
     backend: preset.backend,
     width: width,
     height: height,
@@ -231,6 +234,7 @@ const AugmentHandler = async (
   session: Session,
   scene: GenericScene,
   prompt: PromptNode,
+  characterPrompts: PromptNode[],
   preset: any,
   shared: any,
   samples: number,
@@ -243,6 +247,9 @@ const AugmentHandler = async (
     type: 'text',
     text: preset.prompt,
   };
+  const characterPromptNodes: PromptNode[] = preset.characterPrompts.map(
+    (c: CharacterPrompt) => ({ type: 'text', text: c.prompt })
+  )
   const { width, height } = await getImageDimensions(dataUriToBase64(image));
   const job: AugmentJob = {
     type: 'augment',
@@ -251,6 +258,7 @@ const AugmentHandler = async (
     emotion: preset.emotion,
     weaken: preset.weaken,
     prompt: promptNode,
+    characterPrompts: characterPromptNodes,
     backend: preset.backend,
     width: width,
     height: height,

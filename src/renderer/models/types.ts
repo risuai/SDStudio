@@ -95,6 +95,7 @@ export interface AugmentJob extends AbstractJob {
   image: string;
   method: AugmentMethod;
   prompt?: PromptNode;
+  characterPrompts?: PromptNode[];
   weaken?: number;
   emotion?: string;
   width: number;

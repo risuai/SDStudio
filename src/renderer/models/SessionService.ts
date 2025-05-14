@@ -61,7 +61,7 @@ export class SessionService extends ResourceSyncService<Session> {
             type: 'scene',
             name: 'default',
             resolution: 'portrait',
-            slots: [[{ prompt: '', id: v4() }]],
+            slots: [[{ prompt: '', characterPrompts: [], id: v4() }]],
             game: undefined,
             round: undefined,
             meta: {},
