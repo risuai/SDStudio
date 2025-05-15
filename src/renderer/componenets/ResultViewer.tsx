@@ -39,8 +39,9 @@ import { FaPlus, FaRegSquareCheck } from 'react-icons/fa6';
 import { useContextMenu } from 'react-contexify';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
-import { reaction } from 'mobx';
+import { reaction, set } from 'mobx';
 import {
+  CharacterPrompt,
   ContextMenuType,
   GenericScene,
   Scene,
@@ -528,6 +529,7 @@ const ResultDetailView = observer(
     const [image, setImage] = useState<string | undefined>(undefined);
     const watchedImages = useRef(new Set<string>());
     const [middlePrompt, setMiddlePrompt] = useState<string>('');
+    const [characterPrompts, setCharacterPrompts] = useState<CharacterPrompt[]>([]);
     const [seed, setSeed] = useState<string>('');
     const [scale, setScale] = useState<string>('');
     const [sampler, setSampler] = useState<string>('');
@@ -547,6 +549,7 @@ const ResultDetailView = observer(
             if (job) {
               const { prompt, seed, promptGuidance, sampling, steps, uc } = job;
               setMiddlePrompt(prompt);
+              setCharacterPrompts(job.characterPrompts);
               setSeed(seed?.toString() ?? '');
               setScale(promptGuidance.toString());
               setSampler(sampling);
@@ -554,6 +557,7 @@ const ResultDetailView = observer(
               setUc(uc);
             } else {
               setMiddlePrompt('');
+              setCharacterPrompts([]);
               setSeed('');
               setScale('');
               setSampler('');
@@ -562,6 +566,7 @@ const ResultDetailView = observer(
             }
           } catch (e: any) {
             setMiddlePrompt('');
+            setCharacterPrompts([]);
             setSeed('');
             setScale('');
             setSampler('');
@@ -573,6 +578,7 @@ const ResultDetailView = observer(
           console.log(e);
           setImage(undefined);
           setMiddlePrompt('');
+          setCharacterPrompts([]);
           setSeed('');
           setScale('');
           setSampler('');
@@ -646,8 +652,8 @@ const ResultDetailView = observer(
     });
 
     return (
-      <div className="z-10 bg-white dark:bg-slate-900 w-full h-full flex overflow-hidden flex-col md:flex-row">
-        <div className="flex-none md:w-1/3 p-2 md:p-4">
+      <div className="z-10 bg-white dark:bg-slate-900 w-full h-full flex overflow-auto flex-col md:flex-row">
+        <div className="flex-none md:w-1/3 p-2 md:p-4 overflow-y-auto">
           <div className="flex gap-2 md:gap-3 mb-2 md:mb-6 flex-wrap w-full">
             <button
               className={`round-button back-sky`}
@@ -730,6 +736,20 @@ const ResultDetailView = observer(
                 className="w-full h-24 overflow-auto"
               />
             </div>
+            {characterPrompts.map((prompt, index) => (
+              <div key={index} className="w-full mb-4 border border-gray-200 dark:border-gray-700 rounded-md p-3">
+                <div className="gray-label">캐릭터 프롬프트 </div>
+                <PromptHighlighter
+                  text={prompt.prompt}
+                  className="w-full h-24 overflow-auto"
+                />
+                <div className="gray-label">네거티브 프롬프트 </div>
+                <PromptHighlighter
+                  text={prompt.uc}
+                  className="w-full h-24 overflow-auto"
+                />
+              </div>
+            ))}
             <div className="w-full mb-2 text-sub">
               <span className="gray-label">시드: </span>
               {seed}
@@ -748,7 +768,7 @@ const ResultDetailView = observer(
             </div>
           </div>
         </div>
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
           {image && (
             <img
               src={image}
