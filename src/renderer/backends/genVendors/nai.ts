@@ -108,7 +108,7 @@ export class NovelAiImageGenService implements ImageGenService {
 
     const config = await backend.getConfig();
 
-    let modelValue = this.translateModel(params.model, config.modelVersion ?? ModelVersion.V4_5Curated);
+    let modelValue = this.translateModel(params.model, config.modelVersion ?? ModelVersion.V4_5);
 
     const seed = params.seed ?? this.getRandomInt(1, 2100000000);
     let action = undefined;

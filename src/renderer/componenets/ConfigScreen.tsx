@@ -23,7 +23,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
   const [whiteMode, setWhiteMode] = useState(false);
   const [noIpCheck, setNoIpCheck] = useState(false);
   const [disableQuality, setDisableQuality] = useState(false);
-  const [modelVersion, setModelVersion] = useState(ModelVersion.V4_5Curated);
+  const [modelVersion, setModelVersion] = useState(ModelVersion.V4_5);
   const [delayTime, setDelayTime] = useState(0);
   const [useLocalBgRemoval, setUseLocalBgRemoval] = useState(false);
   const [refreshImage, setRefreshImage] = useState(false);
@@ -45,7 +45,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
       setRefreshImage(config.refreshImage ?? false);
       setUseLocalBgRemoval(config.useLocalBgRemoval ?? false);
       setDisableQuality(config.disableQuality ?? false);
-      setModelVersion(config.modelVersion ?? ModelVersion.V4_5Curated);
+      setModelVersion(config.modelVersion ?? ModelVersion.V4_5);
       setDelayTime(config.delayTime ?? 0);
     })();
     const checkReady = () => {
@@ -326,6 +326,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
             value={modelVersion}
             onChange={(e) => setModelVersion(e.target.value as ModelVersion)}
           >
+            <option value={ModelVersion.V4_5}>NAI V4.5 Full</option>
             <option value={ModelVersion.V4_5Curated}>NAI V4.5 Curated</option>
             <option value={ModelVersion.V4}>NAI V4 Full</option>
             <option value={ModelVersion.V4Curated}>NAI V4 Curated</option>
