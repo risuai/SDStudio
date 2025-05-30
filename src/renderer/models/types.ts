@@ -191,7 +191,7 @@ export class PromptPiece implements IPromptPiece {
   toJSON(): IPromptPiece {
     return {
       prompt: this.prompt,
-      characterPrompts: this.characterPrompts || [],
+      characterPrompts: [...(this.characterPrompts || [])],
       id: this.id,
       enabled: this.enabled,
     };
