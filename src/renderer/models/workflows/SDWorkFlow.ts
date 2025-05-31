@@ -222,6 +222,11 @@ const SDInpaintPreset = new WFVarBuilder()
   .addPromptVar('prompt', '')
   .addPromptVar('uc', '')
   .addNoiseScheduleVar('noiseSchedule', NoiseSchedule.Native)
+  .addCharacterPromptsVar('characterPrompts')
+  .addBoolVar('useCoords', false)
+  .addBoolVar('legacyPromptConditioning', false)
+  .addBoolVar('normalizeStrength', false)
+  .addBoolVar('varietyPlus', false)
   .addVibeSetVar('vibes')
   .addNullIntVar('seed');
 
@@ -237,6 +242,7 @@ const SDInpaintUI = wfiStack([
   ),
   wfiInlineInput('프롬프트', 'prompt', 'preset', 'flex-1'),
   wfiInlineInput('네거티브 프롬프트', 'uc', 'preset', 'flex-1'),
+  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'preset', 'flex-none'),
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
@@ -250,6 +256,10 @@ const SDInpaintUI = wfiStack([
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
+    wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
+    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput('바이브 레퍼런스 강도 정규화', 'normalizeStrength', 'preset', 'flex-none'),
+    wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'preset', 'flex-none'),
   // wfiInlineInput('시드', 'seed', true, 'flex-none'),
@@ -260,6 +270,7 @@ const createSDI2IHandler = (type: string) => {
     session: Session,
     scene: GenericScene,
     prompt: PromptNode,
+    characterPrompts: PromptNode[],
     preset: any,
     shared: any,
     samples: number,
@@ -327,6 +338,11 @@ export function createInpaintPreset(
   preset.noiseSchedule = job.noiseSchedule;
   preset.prompt = job.prompt;
   preset.uc = job.uc;
+  preset.characterPrompts = job.characterPrompts;
+  preset.useCoords = job.useCoords;
+  preset.legacyPromptConditioning = job.legacyPromptConditioning;
+  preset.normalizeStrength = job.normalizeStrength;
+  preset.varietyPlus = job.varietyPlus;
   return preset;
 }
 
@@ -344,7 +360,6 @@ export const SDInpaintDef = new WFDefBuilder('SDInpaint')
   .build();
 
 const SDI2IPreset = SDInpaintPreset.clone()
-  .addIntVar('noise', 0, 1, 0.01, 0)
   .addStringVar('overrideResolution', '');
 
 const SDI2IUI = wfiStack([
@@ -353,6 +368,7 @@ const SDI2IUI = wfiStack([
   wfiInlineInput('노이즈', 'noise', 'preset', 'flex-none'),
   wfiInlineInput('프롬프트', 'prompt', 'preset', 'flex-1'),
   wfiInlineInput('네거티브 프롬프트', 'uc', 'preset', 'flex-1'),
+  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'preset', 'flex-none'),
   wfiGroup('샘플링 설정', [
     wfiPush('top'),
     wfiInlineInput('스탭 수', 'steps', 'preset', 'flex-none'),
@@ -366,6 +382,10 @@ const SDI2IUI = wfiStack([
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
+    wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
+    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput('바이브 레퍼런스 강도 정규화', 'normalizeStrength', 'preset', 'flex-none'),
+    wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'preset', 'flex-none'),
   // wfiInlineInput('시드', 'seed', true, 'flex-none'),
@@ -386,6 +406,11 @@ export function createI2IPreset(
   preset.noiseSchedule = job.noiseSchedule;
   preset.prompt = job.prompt;
   preset.uc = job.uc;
+  preset.characterPrompts = job.characterPrompts;
+  preset.useCoords = job.useCoords;
+  preset.legacyPromptConditioning = job.legacyPromptConditioning;
+  preset.normalizeStrength = job.normalizeStrength;
+  preset.varietyPlus = job.varietyPlus;
   return preset;
 }
 
