@@ -61,6 +61,7 @@ export interface SDAbstractJob<T> extends AbstractJob {
   characterPrompts: CharacterPrompt[];
   useCoords: boolean;
   legacyPromptConditioning: boolean;
+  normalizeStrength: boolean;
   varietyPlus: boolean;
   noiseSchedule: string;
   backend: ModelBackend;

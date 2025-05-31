@@ -162,7 +162,8 @@ export class NovelAiImageGenService implements ImageGenService {
         inpaintImg2ImgStrength: 1,
         cfg_rescale: params.cfgRescale,
         add_original_image: params.originalImage ? true : false,
-        normalize_reference_strength_multiple: true,
+        normalize_reference_strength_multiple:
+          params.normalizeStrength ?? false,
         skip_cfg_above_sigma: null,
         v4_prompt: {
           caption: {
@@ -182,12 +183,22 @@ export class NovelAiImageGenService implements ImageGenService {
       },
     };
     if (params.vibes.length) {
-      body.parameters.reference_strength_multiple = params.vibes.map(
-        (v) => v.strength,
-      );
       body.parameters.reference_image_multiple = params.vibes.map(
         (v) => v.image,
       );
+      body.parameters.reference_strength_multiple = params.vibes.map(
+        (v) => v.strength,
+      );
+      if (params.normalizeStrength) {
+        const sum = body.parameters.reference_strength_multiple.reduce(
+          (acc: number, val: number) => acc + val,
+          0,
+        );
+        body.parameters.reference_strength_multiple =
+          body.parameters.reference_strength_multiple.map(
+            (val: number) => val / sum,
+          );
+      }
     }
     if (params.image) {
       body.parameters.image = params.image;

@@ -49,6 +49,7 @@ const SDImageGenPreset = new WFVarBuilder()
 
 const SDImageGenShared = new WFVarBuilder()
   .addVibeSetVar('vibes')
+  .addBoolVar('normalizeStrength', true)
   .addNullIntVar('seed');
 
 const SDImageGenUI = wfiStack([
@@ -76,6 +77,12 @@ const SDImageGenUI = wfiStack([
       'Legacy Prompt Conditioning 모드',
       'legacyPromptConditioning',
       'preset',
+      'flex-none',
+    ),
+    wfiInlineInput(
+      '바이브 강도 정규화',
+      'normalizeStrength',
+      'shared',
       'flex-none',
     ),
     wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
@@ -137,6 +144,12 @@ const SDImageGenEasyInnerUI = wfiStack([
       'preset',
       'flex-none',
     ),
+    wfiInlineInput(
+      '바이브 강도 정규화',
+      'normalizeStrength',
+      'shared',
+      'flex-none',
+    ),
     wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
 ]);
@@ -170,6 +183,7 @@ const SDImageGenHandler = async (
     })),
     useCoords: preset.useCoords,
     legacyPromptConditioning: preset.legacyPromptConditioning,
+    normalizeStrength: shared.normalizeStrength,
     varietyPlus: preset.varietyPlus,
     noiseSchedule: preset.noiseSchedule,
     backend: preset.backend,
@@ -254,6 +268,7 @@ const SDInpaintPreset = new WFVarBuilder()
   .addCharacterPromptsVar('characterPrompts', [])
   .addBoolVar('useCoords', false)
   .addBoolVar('legacyPromptConditioning', false)
+  .addBoolVar('normalizeStrength', true)
   .addBoolVar('varietyPlus', false)
   .addVibeSetVar('vibes')
   .addNullIntVar('seed');
@@ -287,6 +302,12 @@ const SDInpaintUI = wfiStack([
     wfiInlineInput(
       'Legacy Prompt Conditioning 모드',
       'legacyPromptConditioning',
+      'preset',
+      'flex-none',
+    ),
+    wfiInlineInput(
+      '바이브 강도 정규화',
+      'normalizeStrength',
       'preset',
       'flex-none',
     ),
@@ -329,6 +350,7 @@ const createSDI2IHandler = (type: string) => {
       characterPrompts: preset.characterPrompts,
       useCoords: preset.useCoords,
       legacyPromptConditioning: preset.legacyPromptConditioning,
+      normalizeStrength: shared.normalizeStrength,
       varietyPlus: preset.varietyPlus,
       noiseSchedule: preset.noiseSchedule,
       backend: preset.backend,
@@ -414,6 +436,12 @@ const SDI2IUI = wfiStack([
     wfiInlineInput(
       'Legacy Prompt Conditioning 모드',
       'legacyPromptConditioning',
+      'preset',
+      'flex-none',
+    ),
+    wfiInlineInput(
+      '바이브 강도 정규화',
+      'normalizeStrength',
       'preset',
       'flex-none',
     ),
