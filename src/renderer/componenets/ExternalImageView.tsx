@@ -61,7 +61,6 @@ export const ExternalImageView = observer(
       preset.backPrompt = '';
       preset.uc = job.uc ?? '';
       preset.smea = job.smea ?? false;
-      preset.dyn = job.dyn ?? false;
       preset.sampling = job.sampling ?? Sampling.KEulerAncestral;
       preset.steps = job.steps ?? 28;
       preset.noiseSchedule = job.noiseSchedule ?? 'native';
@@ -160,8 +159,8 @@ export const ExternalImageView = observer(
                   {job.smea ? 'O' : 'X'}
                 </div>
                 <div className="w-full mb-2 text-sub">
-                  <span className="gray-label">DYN: </span>
-                  {job.dyn ? 'O' : 'X'}
+                  <span className="gray-label">Variety+: </span>
+                  {job.varietyPlus ? 'O' : 'X'}
                 </div>
               </>
             )}

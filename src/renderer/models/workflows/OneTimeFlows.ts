@@ -249,7 +249,6 @@ export const queueEnhance = async (
     : workFlowService.buildPreset('SDI2I');
   preset.image = image;
   preset.smea = false;
-  preset.dyn = false;
   const { strength, noise } = input;
   preset.strength = strength;
   preset.noise = noise;

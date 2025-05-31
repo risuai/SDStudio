@@ -383,7 +383,6 @@ export async function importPreset(session: Session, base64: string) {
     newJson.type = 'SDImageGenEasy';
     newJson.name = json.name;
     newJson.profile = json.profile;
-    newJson.dyn = !!json.dynOn;
     newJson.smea = !json.smeaOff;
     newJson.sampling = json.sampling ?? Sampling.KEulerAncestral;
     newJson.noiseSchedule = json.noiseSchedule ?? 'native';

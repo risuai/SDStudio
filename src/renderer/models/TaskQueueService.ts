@@ -292,7 +292,6 @@ class GenerateImageTaskHandler implements TaskHandler {
       ),
       sampling: job.sampling as Sampling,
       sm: job.smea,
-      dyn: job.dyn,
       vibes: vibes,
       steps: job.steps,
       cfgRescale: job.cfgRescale,
@@ -322,6 +321,7 @@ class GenerateImageTaskHandler implements TaskHandler {
       arg.mask = inpaintJob.mask;
       arg.originalImage = inpaintJob.originalImage;
       arg.imageStrength = inpaintJob.strength;
+      arg.noise = inpaintJob.noise;
     }
     if (this.type === 'i2i') {
       const i2iJob = job as SDI2IJob;

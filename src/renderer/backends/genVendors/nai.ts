@@ -157,13 +157,14 @@ export class NovelAiImageGenService implements ImageGenService {
         inpaintImg2ImgStrength: 1,
         cfg_rescale: params.cfgRescale,
         add_original_image: params.originalImage ? true : false,
+        normalize_reference_strength_multiple: params.normalizeStrength || false,
+        skip_cfg_above_sigma: null,
       },
     };
     if (params.vibes.length) {
       body.parameters.reference_strength_multiple = params.vibes.map(
         (v) => v.strength,
       );
-      body.parameters.normalize_reference_strength_multiple = params.normalizeStrength;
       body.parameters.reference_image_multiple = params.vibes.map((v) => v.image)
     }
     if (params.image) {

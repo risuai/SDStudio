@@ -38,7 +38,6 @@ const SDImageGenPreset = new WFVarBuilder()
   .addIntVar('steps', 1, 50, 1, 28)
   .addIntVar('promptGuidance', 0, 10, 0.1, 5)
   .addBoolVar('smea', false)
-  .addBoolVar('dyn', false)
   .addSamplingVar('sampling', Sampling.KEulerAncestral)
   .addPromptVar('frontPrompt', defaultFPrompt)
   .addPromptVar('backPrompt', defaultBPrompt)
@@ -72,7 +71,6 @@ const SDImageGenUI = wfiStack([
       'flex-none',
     ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
-    wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -114,7 +112,6 @@ const SDImageGenEasyInnerUI = wfiStack([
       'flex-none',
     ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
-    wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -139,7 +136,6 @@ const SDImageGenHandler = async (
     steps: preset.steps,
     promptGuidance: preset.promptGuidance,
     smea: preset.smea,
-    dyn: preset.dyn,
     prompt: prompt,
     sampling: preset.sampling,
     uc: preset.uc,
@@ -216,11 +212,11 @@ const SDInpaintPreset = new WFVarBuilder()
   .addImageVar('image')
   .addImageVar('mask')
   .addIntVar('strength', 0, 1, 0.01, 0.7)
+  .addIntVar('noise', 0, 1, 0.01, 0)
   .addIntVar('cfgRescale', 0, 1, 0.01, 0)
   .addIntVar('steps', 1, 50, 1, 28)
   .addIntVar('promptGuidance', 0, 10, 0.1, 5)
   .addBoolVar('smea', false)
-  .addBoolVar('dyn', false)
   .addBoolVar('originalImage', true)
   .addSamplingVar('sampling', Sampling.KEulerAncestral)
   .addPromptVar('prompt', '')
@@ -232,6 +228,7 @@ const SDInpaintPreset = new WFVarBuilder()
 const SDInpaintUI = wfiStack([
   wfiInlineInput('이미지', 'image', 'preset', 'flex-none'),
   wfiInlineInput('인페인트 강도', 'strength', 'preset', 'flex-none'),
+  wfiInlineInput('노이즈', 'noise', 'preset', 'flex-none'),
   wfiInlineInput(
     '비마스크 영역 편집 방지',
     'originalImage',
@@ -250,7 +247,6 @@ const SDInpaintUI = wfiStack([
       'flex-none',
     ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
-    wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -286,7 +282,6 @@ const createSDI2IHandler = (type: string) => {
       steps: preset.steps,
       promptGuidance: preset.promptGuidance,
       smea: preset.smea,
-      dyn: preset.dyn,
       prompt: { type: 'text', text: preset.prompt },
       sampling: preset.sampling,
       uc: preset.uc,
@@ -299,11 +294,11 @@ const createSDI2IHandler = (type: string) => {
       backend: preset.backend,
       vibes: preset.vibes,
       strength: preset.strength,
+      noise: preset.noise,
       overrideResolution: preset.overrideResolution,
       originalImage: isInpaint ? preset.originalImage : true,
       image: image,
       mask: isInpaint ? await getMask() : '',
-      noise: isInpaint ? undefined : preset.noise,
     };
     const param: TaskParam = {
       session: session,
@@ -328,7 +323,6 @@ export function createInpaintPreset(
   preset.cfgRescale = job.cfgRescale;
   preset.promptGuidance = job.promptGuidance;
   preset.smea = job.smea;
-  preset.dyn = job.dyn;
   preset.sampling = job.sampling;
   preset.noiseSchedule = job.noiseSchedule;
   preset.prompt = job.prompt;
@@ -369,7 +363,6 @@ const SDI2IUI = wfiStack([
       'flex-none',
     ),
     wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
-    wfiInlineInput('DYN', 'dyn', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -389,7 +382,6 @@ export function createI2IPreset(
   preset.cfgRescale = job.cfgRescale;
   preset.promptGuidance = job.promptGuidance;
   preset.smea = job.smea;
-  preset.dyn = job.dyn;
   preset.sampling = job.sampling;
   preset.noiseSchedule = job.noiseSchedule;
   preset.prompt = job.prompt;

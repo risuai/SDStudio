@@ -56,7 +56,6 @@ export interface SDAbstractJob<T> extends AbstractJob {
   steps: number;
   promptGuidance: number;
   smea: boolean;
-  dyn: boolean;
   sampling: string;
   prompt: T;
   uc: string;
@@ -81,6 +80,7 @@ export interface SDInpaintJob extends SDAbstractJob<PromptNode> {
   mask: string;
   image: string;
   strength: number;
+  noise: number;
   originalImage?: boolean;
 }
 

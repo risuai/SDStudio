@@ -356,7 +356,6 @@ function migratePreset(preset: any): any {
     steps: preset.steps ?? 28,
     promptGuidance: preset.promptGuidance ?? 5,
     smea: !preset.smeaOff,
-    dyn: !!preset.dynOn,
     sampling: preset.sampling ?? 'k_euler_ancestral',
     frontPrompt: preset.frontPrompt,
     backPrompt: preset.backPrompt,
