@@ -37,7 +37,6 @@ const SDImageGenPreset = new WFVarBuilder()
   .addIntVar('cfgRescale', 0, 1, 0.01, 0)
   .addIntVar('steps', 1, 50, 1, 28)
   .addIntVar('promptGuidance', 0, 10, 0.1, 5)
-  .addBoolVar('smea', false)
   .addSamplingVar('sampling', Sampling.KEulerAncestral)
   .addPromptVar('frontPrompt', defaultFPrompt)
   .addPromptVar('backPrompt', defaultBPrompt)
@@ -70,7 +69,6 @@ const SDImageGenUI = wfiStack([
       'preset',
       'flex-none',
     ),
-    wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -111,7 +109,6 @@ const SDImageGenEasyInnerUI = wfiStack([
       'preset',
       'flex-none',
     ),
-    wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -135,7 +132,6 @@ const SDImageGenHandler = async (
     cfgRescale: preset.cfgRescale,
     steps: preset.steps,
     promptGuidance: preset.promptGuidance,
-    smea: preset.smea,
     prompt: prompt,
     sampling: preset.sampling,
     uc: preset.uc,
@@ -216,7 +212,6 @@ const SDInpaintPreset = new WFVarBuilder()
   .addIntVar('cfgRescale', 0, 1, 0.01, 0)
   .addIntVar('steps', 1, 50, 1, 28)
   .addIntVar('promptGuidance', 0, 10, 0.1, 5)
-  .addBoolVar('smea', false)
   .addBoolVar('originalImage', true)
   .addSamplingVar('sampling', Sampling.KEulerAncestral)
   .addPromptVar('prompt', '')
@@ -252,7 +247,6 @@ const SDInpaintUI = wfiStack([
       'preset',
       'flex-none',
     ),
-    wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -292,7 +286,6 @@ const createSDI2IHandler = (type: string) => {
       cfgRescale: preset.cfgRescale,
       steps: preset.steps,
       promptGuidance: preset.promptGuidance,
-      smea: preset.smea,
       prompt: { type: 'text', text: preset.prompt },
       sampling: preset.sampling,
       uc: preset.uc,
@@ -333,7 +326,6 @@ export function createInpaintPreset(
   preset.mask = mask;
   preset.cfgRescale = job.cfgRescale;
   preset.promptGuidance = job.promptGuidance;
-  preset.smea = job.smea;
   preset.sampling = job.sampling;
   preset.noiseSchedule = job.noiseSchedule;
   preset.prompt = job.prompt;
@@ -378,7 +370,6 @@ const SDI2IUI = wfiStack([
       'preset',
       'flex-none',
     ),
-    wfiInlineInput('SMEA', 'smea', 'preset', 'flex-none'),
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
@@ -401,7 +392,6 @@ export function createI2IPreset(
   preset.mask = mask;
   preset.cfgRescale = job.cfgRescale;
   preset.promptGuidance = job.promptGuidance;
-  preset.smea = job.smea;
   preset.sampling = job.sampling;
   preset.noiseSchedule = job.noiseSchedule;
   preset.prompt = job.prompt;

@@ -40,6 +40,8 @@ export class NovelAiImageGenService implements ImageGenService {
 
     if (version === ModelVersion.V4Curated && model.match(/anime|i2i/))
       return resultModel + '-preview';
+    if (version === ModelVersion.V4_5 && model === Model.Inpaint)
+      return this.translateModel(Model.Inpaint, ModelVersion.V4);
     return resultModel;
   }
 
@@ -152,7 +154,7 @@ export class NovelAiImageGenService implements ImageGenService {
         legacy: false,
         legacy_v3_extend: false,
         prefer_brownian: true,
-        autoSmea: params.sm,
+        autoSmea: false,
         legacy_uc: params.legacyPromptConditioning,
         inpaintImg2ImgStrength: 1,
         cfg_rescale: params.cfgRescale,

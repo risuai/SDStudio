@@ -60,7 +60,6 @@ export const ExternalImageView = observer(
       preset.frontPrompt = job.prompt ?? '';
       preset.backPrompt = '';
       preset.uc = job.uc ?? '';
-      preset.smea = job.smea ?? false;
       preset.sampling = job.sampling ?? Sampling.KEulerAncestral;
       preset.steps = job.steps ?? 28;
       preset.noiseSchedule = job.noiseSchedule ?? 'native';
@@ -153,10 +152,6 @@ export const ExternalImageView = observer(
                 <div className="w-full mb-2 text-sub">
                   <span className="gray-label">CFG 리스케일: </span>
                   {job.cfgRescale}
-                </div>
-                <div className="w-full mb-2 text-sub">
-                  <span className="gray-label">SMEA: </span>
-                  {job.smea ? 'O' : 'X'}
                 </div>
                 <div className="w-full mb-2 text-sub">
                   <span className="gray-label">Variety+: </span>

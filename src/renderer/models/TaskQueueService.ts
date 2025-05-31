@@ -291,7 +291,6 @@ class GenerateImageTaskHandler implements TaskHandler {
         task.params.scene!.resolutionHeight,
       ),
       sampling: job.sampling as Sampling,
-      sm: job.smea,
       vibes: vibes,
       steps: job.steps,
       cfgRescale: job.cfgRescale,

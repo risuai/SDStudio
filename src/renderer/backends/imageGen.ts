@@ -110,7 +110,6 @@ export interface ImageGenInput {
   resolution: ImageSize;
   sampling: Sampling;
   outputFilePath: string;
-  sm: boolean;
   steps: number;
   promptGuidance: number;
   cfgRescale: number;

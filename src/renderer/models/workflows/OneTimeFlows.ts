@@ -248,7 +248,6 @@ export const queueEnhance = async (
     ? createI2IPreset(imgJob, image)
     : workFlowService.buildPreset('SDI2I');
   preset.image = image;
-  preset.smea = false;
   const { strength, noise } = input;
   preset.strength = strength;
   preset.noise = noise;

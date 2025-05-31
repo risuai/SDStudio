@@ -55,7 +55,6 @@ export interface SDAbstractJob<T> extends AbstractJob {
   cfgRescale: number;
   steps: number;
   promptGuidance: number;
-  smea: boolean;
   sampling: string;
   prompt: T;
   uc: string;

@@ -90,7 +90,6 @@ export async function extractPromptDataFromBase64(
         noiseSchedule: data['noise_schedule'],
         steps: data['steps'],
         uc: data['uc'],
-        smea: data['autoSmea'],
         vibes: [],
         normalizeStrength: data['normalize_reference_strength_multiple'],
         varietyPlus: data['skip_cfg_above_sigma'] ? true : false,
