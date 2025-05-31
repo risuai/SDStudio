@@ -301,12 +301,11 @@ class GenerateImageTaskHandler implements TaskHandler {
       characterPositions: [],
       useCoords: job.useCoords,
       legacyPromptConditioning: job.legacyPromptConditioning,
-      normalizeStrength: job.normalizeStrength,
       varietyPlus: job.varietyPlus,
       outputFilePath: outputFilePath,
       seed: job.seed,
     };
-    if (this.type === 'gen' && job.characterPrompts?.length > 0) {
+    if (job.characterPrompts?.length) {
       for (const character of job.characterPrompts) {
         arg.characterPrompts?.push(character.prompt);
         arg.characterUCs?.push(character.uc);

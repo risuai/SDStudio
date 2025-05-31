@@ -91,7 +91,6 @@ export async function extractPromptDataFromBase64(
         steps: data['steps'],
         uc: data['uc'],
         vibes: [],
-        normalizeStrength: data['normalize_reference_strength_multiple'],
         varietyPlus: data['skip_cfg_above_sigma'] ? true : false,
         backend: { type: 'NAI' },
         useCoords: data['v4_prompt']['use_coords'],

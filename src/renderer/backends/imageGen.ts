@@ -123,7 +123,6 @@ export interface ImageGenInput {
   originalImage?: boolean;
   useCoords?: boolean;
   legacyPromptConditioning?: boolean;
-  normalizeStrength?: boolean;
   varietyPlus?: boolean;
   characterPrompts?: string[];
   characterUCs?: string[];

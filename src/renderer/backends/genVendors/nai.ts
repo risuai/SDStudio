@@ -159,7 +159,7 @@ export class NovelAiImageGenService implements ImageGenService {
         inpaintImg2ImgStrength: 1,
         cfg_rescale: params.cfgRescale,
         add_original_image: params.originalImage ? true : false,
-        normalize_reference_strength_multiple: params.normalizeStrength || false,
+        normalize_reference_strength_multiple: true,
         skip_cfg_above_sigma: null,
       },
     };
