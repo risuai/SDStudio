@@ -82,6 +82,76 @@ export interface BrushToolRef {
   undo(): void;
 }
 
+const CHUNK_SIZE = 8;
+
+// Helper functions for chunk-based drawing
+function getChunkCoordinates(x: number, y: number) {
+  return {
+    chunkX: Math.floor(x / CHUNK_SIZE),
+    chunkY: Math.floor(y / CHUNK_SIZE),
+  };
+}
+
+function drawChunk(
+  ctx: CanvasRenderingContext2D,
+  chunkX: number,
+  chunkY: number,
+  color: string,
+) {
+  ctx.fillStyle = color;
+  ctx.fillRect(chunkX * CHUNK_SIZE, chunkY * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+}
+
+function getChunksInBrush(x: number, y: number, brushSize: number) {
+  const chunks = new Set<string>();
+  const centerChunk = getChunkCoordinates(x, y);
+  const brushRadius = brushSize;
+  const chunkRadius = Math.ceil(brushRadius / CHUNK_SIZE);
+  
+  for (let dx = -chunkRadius; dx <= chunkRadius; dx++) {
+    for (let dy = -chunkRadius; dy <= chunkRadius; dy++) {
+      const chunkX = centerChunk.chunkX + dx;
+      const chunkY = centerChunk.chunkY + dy;
+      
+      // Calculate distance from brush center to chunk center
+      const chunkCenterX = (chunkX + 0.5) * CHUNK_SIZE;
+      const chunkCenterY = (chunkY + 0.5) * CHUNK_SIZE;
+      const distance = Math.hypot(chunkCenterX - x, chunkCenterY - y);
+      
+      if (distance <= brushRadius) {
+        chunks.add(`${chunkX},${chunkY}`);
+      }
+    }
+  }
+  
+  return Array.from(chunks).map(key => {
+    const [chunkX, chunkY] = key.split(',').map(Number);
+    return { chunkX, chunkY };
+  });
+}
+
+function getChunksBetween(x0: number, y0: number, x1: number, y1: number, brushSize: number) {
+  const chunks = new Set<string>();
+  const dist = Math.hypot(x1 - x0, y1 - y0);
+  const steps = Math.ceil(dist / (CHUNK_SIZE / 2));
+  
+  for (let i = 0; i <= steps; i++) {
+    const t = steps === 0 ? 0 : i / steps;
+    const x = x0 + (x1 - x0) * t;
+    const y = y0 + (y1 - y0) * t;
+    
+    const brushChunks = getChunksInBrush(x, y, brushSize);
+    brushChunks.forEach(({ chunkX, chunkY }) => {
+      chunks.add(`${chunkX},${chunkY}`);
+    });
+  }
+
+  return Array.from(chunks).map(key => {
+    const [chunkX, chunkY] = key.split(',').map(Number);
+    return { chunkX, chunkY };
+  });
+}
+
 const BrushTool = forwardRef<BrushToolRef, Props>(
   ({ image, mask, imageWidth, imageHeight, brushSize }, ref) => {
     const canvasRef = useRef<any>(null);
@@ -189,23 +259,18 @@ const BrushTool = forwardRef<BrushToolRef, Props>(
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
 
-      const drawBrush = (x: any, y: any) => {
-        ctx.beginPath();
-        ctx.arc(x, y, brushSize, 0, Math.PI * 2);
-        ctx.fillStyle = brushColor;
-        ctx.fill();
+      const drawBrushChunk = (x: any, y: any) => {
+        const chunks = getChunksInBrush(x, y, brushSize);
+        chunks.forEach(({ chunkX, chunkY }) => {
+          drawChunk(ctx, chunkX, chunkY, brushColor);
+        });
       };
 
       const interpolate = (x0: any, y0: any, x1: any, y1: any) => {
-        const dist = Math.hypot(x1 - x0, y1 - y0);
-        const steps = Math.ceil(dist / brushSize) * 2;
-        const dx = (x1 - x0) / steps;
-        const dy = (y1 - y0) / steps;
-        for (let i = 0; i <= steps; i++) {
-          const x = x0 + dx * i;
-          const y = y0 + dy * i;
-          drawBrush(x, y);
-        }
+        const chunks = getChunksBetween(x0, y0, x1, y1, brushSize);
+        chunks.forEach(({ chunkX, chunkY }) => {
+          drawChunk(ctx, chunkX, chunkY, brushColor);
+        });
       };
 
       const draw = (e: any) => {
@@ -220,7 +285,7 @@ const BrushTool = forwardRef<BrushToolRef, Props>(
           if (lastPos.x !== -1) {
             interpolate(lastPos.x, lastPos.y, x, y);
           } else {
-            drawBrush(x, y);
+            drawBrushChunk(x, y);
           }
         }
 
@@ -267,12 +332,19 @@ const BrushTool = forwardRef<BrushToolRef, Props>(
         if (isDrawingRef.current) {
           draw(e);
         } else {
+          // Show preview of chunks that would be painted
           ctx.putImageData(curImageRef.current, 0, 0);
-          ctx.beginPath();
-          ctx.arc(x, y, brushSize, 0, Math.PI * 2);
+          const chunks = getChunksInBrush(x, y, brushSize);
           ctx.strokeStyle = 'black';
           ctx.lineWidth = 2;
-          ctx.stroke();
+          chunks.forEach(({ chunkX, chunkY }) => {
+            ctx.strokeRect(
+              chunkX * CHUNK_SIZE,
+              chunkY * CHUNK_SIZE,
+              CHUNK_SIZE,
+              CHUNK_SIZE,
+            );
+          });
         }
       };
 
