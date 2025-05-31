@@ -48,6 +48,7 @@ const SDImageGenPreset = new WFVarBuilder()
   .addBoolVar('useCoords', false)
   .addBoolVar('legacyPromptConditioning', false)
   .addBoolVar('normalizeStrength', false)
+  .addBoolVar('varietyPlus', false)
 
 const SDImageGenShared = new WFVarBuilder()
   .addVibeSetVar('vibes')
@@ -78,6 +79,7 @@ const SDImageGenUI = wfiStack([
     wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
     wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
     wfiInlineInput('바이브 레퍼런스 강도 정규화', 'normalizeStrength', 'preset', 'flex-none'),
+    wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'shared', 'flex-none'),
 ]);
@@ -148,6 +150,7 @@ const SDImageGenHandler = async (
     useCoords: preset.useCoords,
     legacyPromptConditioning: preset.legacyPromptConditioning,
     normalizeStrength: preset.normalizeStrength,
+    varietyPlus: preset.varietyPlus,
     noiseSchedule: preset.noiseSchedule,
     backend: preset.backend,
     vibes: shared.vibes,
@@ -291,6 +294,7 @@ const createSDI2IHandler = (type: string) => {
       useCoords: preset.useCoords,
       legacyPromptConditioning: preset.legacyPromptConditioning,
       normalizeStrength: preset.normalizeStrength,
+      varietyPlus: preset.varietyPlus,
       noiseSchedule: preset.noiseSchedule,
       backend: preset.backend,
       vibes: preset.vibes,

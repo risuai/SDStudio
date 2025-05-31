@@ -194,6 +194,21 @@ export class NovelAiImageGenService implements ImageGenService {
 
       if (params.sampling == Sampling.KEulerAncestral)
         body.parameters.deliberate_euler_ancestral_bug = false
+      if (params.varietyPlus) {
+        let sigmaCoef;
+        switch (config.modelVersion) {
+          case ModelVersion.V4_5: case ModelVersion.V4_5Curated:
+            sigmaCoef = 58;
+            break;
+          default:
+            sigmaCoef = 19;
+            break;
+        }
+        const defaultPixels = 832 * 1216;
+        const resPixels = resolutionValue.width * resolutionValue.height;
+        const pixelRatio = resPixels / defaultPixels;
+        body.parameters.skip_cfg_above_sigma = sigmaCoef * pixelRatio ** 0.5;
+      }
 
       body.parameters.naid4_addict = {
         naid4_legacy_uc: params.legacyPromptConditioning

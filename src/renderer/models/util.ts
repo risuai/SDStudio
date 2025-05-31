@@ -94,6 +94,7 @@ export async function extractPromptDataFromBase64(
         smea: data['sm'],
         vibes: [],
         normalizeStrength: false,
+        varietyPlus: false,
         backend: { type: 'NAI' },
         useCoords: data['v4_prompt']['use_coords'],
         legacyPromptConditioning: data['v4_negative_prompt']['legacy_uc'],
