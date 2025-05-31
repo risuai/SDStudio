@@ -129,6 +129,7 @@ export class NovelAiImageGenService implements ImageGenService {
       model: modelValue,
       action: action,
       parameters: {
+        params_version: 3,
         width: resolutionValue.width,
         height: resolutionValue.height,
         noise_schedule: params.noiseSchedule,
@@ -140,17 +141,20 @@ export class NovelAiImageGenService implements ImageGenService {
         noise: params.noise,
         seed: seed,
         n_samples: 1,
-        ucPreset: 3,
-        sm: params.sampling === Sampling.DDIM ? false : params.sm,
-        sm_dyn: params.sampling === Sampling.DDIM ? false : params.dyn,
+        ucPreset: 0,
         negative_prompt: params.uc,
-        params_version: 1,
         strength: params.imageStrength,
         qualityToggle: config.disableQuality ? false : true,
         reference_image_multiple: [],
         reference_strength_multiple: [],
+        characterPrompts: [],
+        use_coords: params.useCoords,
         legacy: false,
         legacy_v3_extend: false,
+        prefer_brownian: true,
+        autoSmea: params.sm,
+        legacy_uc: params.legacyPromptConditioning,
+        inpaintImg2ImgStrength: 1,
         cfg_rescale: params.cfgRescale,
         add_original_image: params.originalImage ? true : false,
       },
@@ -169,69 +173,52 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.mask = params.mask;
     }
     if (params.model === Model.Inpaint) {
-      body.parameters.sm = false;
-      body.parameters.sm_dyn = false;
+      body.parameters.extra_noise_seed = seed;
       if (params.sampling === Sampling.DDIM) {
         body.parameters.sampler = this.translateSampling(
           Sampling.KEulerAncestral,
         );
       }
     }
-    if (params.model === Model.Anime) {
-      body.parameters.params_version = 3;
-      body.parameters.add_original_image = true;
-      body.parameters.characterPrompts = [];
-      body.parameters.legacy = false;
-      body.parameters.legacy_v3_extend = false;
-      body.parameters.prefer_brownian = true;
-      body.parameters.ucPreset = 0;
-      body.parameters.use_coords = params.useCoords;
-      body.parameters.autoSmea = params.sm;
-      body.parameters.sm = undefined;
-      body.parameters.sm_dyn = undefined;
-      body.parameters.enable_hr = undefined;
-      body.parameters.enable_AD = undefined;
-
-      if (params.sampling == Sampling.KEulerAncestral)
-        body.parameters.deliberate_euler_ancestral_bug = false
-      if (params.varietyPlus) {
-        let sigmaCoef;
-        switch (config.modelVersion) {
-          case ModelVersion.V4_5: case ModelVersion.V4_5Curated:
-            sigmaCoef = 58;
-            break;
-          default:
-            sigmaCoef = 19;
-            break;
-        }
-        const defaultPixels = 832 * 1216;
-        const resPixels = resolutionValue.width * resolutionValue.height;
-        const pixelRatio = resPixels / defaultPixels;
-        body.parameters.skip_cfg_above_sigma = sigmaCoef * pixelRatio ** 0.5;
+    if (params.model === Model.I2I) {
+      body.parameters.extra_noise_seed = seed;
+      body.parameters.color_correct = true;
+    }
+    if (params.sampling == Sampling.KEulerAncestral) {
+      body.parameters.deliberate_euler_ancestral_bug = false
+    }
+    if (params.varietyPlus) {
+      let sigmaCoef: number;
+      switch (config.modelVersion) {
+        case ModelVersion.V4_5: case ModelVersion.V4_5Curated:
+          sigmaCoef = 58; break;
+        case ModelVersion.V4: case ModelVersion.V4Curated:
+          sigmaCoef = 19; break;
+        case undefined:
+          sigmaCoef = 0; break;
       }
-
-      body.parameters.naid4_addict = {
-        naid4_legacy_uc: params.legacyPromptConditioning
-      }
-      body.parameters.legacy_uc = params.legacyPromptConditioning
-
+      const defaultPixels = 832 * 1216;
+      const resPixels = resolutionValue.width * resolutionValue.height;
+      const pixelRatio = resPixels / defaultPixels;
+      body.parameters.skip_cfg_above_sigma = sigmaCoef * pixelRatio ** 0.5;
+    }
+    if (params.characterPrompts?.length) {
       const center = { x: 0.5, y: 0.5 };
       const charaPos = (index: number) => params.useCoords ?
         params.characterPositions?.[index] ?? center
         : center;
-      body.parameters.characterPrompts = (params.characterPrompts ?? [])
-        .map((charPrompt, index) => ({
-          prompt: charPrompt,
-          uc: params.characterUCs?.[index] ?? '',
-          center: charaPos(index),
-        }));
+      body.parameters.characterPrompts = params.characterPrompts.map((charPrompt, index) => ({
+        prompt: charPrompt,
+        uc: params.characterUCs?.[index] ?? '',
+        center: charaPos(index),
+      }));
       body.parameters.v4_prompt = {
         caption: {
           base_caption: params.prompt,
-          char_captions: params.characterPrompts?.map((charPrompt, index) => ({
+          char_captions: params.characterPrompts.map((charPrompt, index) => ({
             char_caption: charPrompt,
             centers: [charaPos(index)],
-          })) ?? [],
+          })),
         },
         use_coords: params.useCoords,
         use_order: true,
