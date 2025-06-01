@@ -90,6 +90,7 @@ const SDImageGenEasyUI = wfiStack([
   wfiInlineInput('배경 관련 태그', 'backgroundPrompt', 'shared', 'flex-1'),
   wfiInlineInput('태그 밴 리스트', 'uc', 'shared', 'flex-1'),
   wfiInlineInput('시드', 'seed', 'shared', 'flex-none'),
+  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'preset', 'flex-none'),
   wfiInlineInput('바이브 설정', 'vibes', 'shared', 'flex-none'),
 ]);
 
@@ -110,6 +111,9 @@ const SDImageGenEasyInnerUI = wfiStack([
     wfiInlineInput('샘플링', 'sampling', 'preset', 'flex-none'),
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
+    wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
+    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
 ]);
 
@@ -199,6 +203,7 @@ export const SDImageGenEasyDef = new WFDefBuilder('SDImageGenEasy')
   .setInnerEditor(SDImageGenEasyInnerUI)
   .setHandler(SDImageGenHandler)
   .setCreatePrompt(SDCreatePrompt)
+  .setCreateCharacterPrompts(SDCreateCharacterPrompts)
   .build();
 
 const SDInpaintPreset = new WFVarBuilder()
