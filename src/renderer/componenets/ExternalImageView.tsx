@@ -66,6 +66,7 @@ export const ExternalImageView = observer(
       preset.promptGuidance = job.promptGuidance ?? 5;
       preset.cfgRescale = job.cfgRescale ?? 0;
       preset.useCoords = job.useCoords ?? false;
+      preset.varietyPlus = job.varietyPlus ?? false;
       preset.legacyPromptConditioning = job.legacyPromptConditioning ?? false;
       preset.characterPrompts = job.characterPrompts ?? [];
       appState.curSession!.addPreset(preset);

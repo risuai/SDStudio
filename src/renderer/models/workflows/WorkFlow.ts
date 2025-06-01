@@ -1,5 +1,6 @@
 import { action, observable, makeAutoObservable } from 'mobx';
 import {
+  CharacterPrompt,
   GenericScene,
   ModelBackend,
   PromptNode,
@@ -133,7 +134,7 @@ export interface WFSelectVar extends WFAbstractVar {
 
 export interface WFCharacterPromptsVar extends WFAbstractVar {
   type: 'characterPrompts';
-  default: [],
+  default: CharacterPrompt[],
 }
 
 export type WFVar =
@@ -429,11 +430,11 @@ export class WFVarBuilder {
     return this;
   }
 
-  addCharacterPromptsVar(name: string): this {
+  addCharacterPromptsVar(name: string, defaultValue: CharacterPrompt[]): this {
     this.vars.push({
       type: 'characterPrompts',
       name,
-      default: [],
+      default: defaultValue,
     });
     return this;
   }
