@@ -78,10 +78,24 @@ const SDImageGenUI = wfiStack([
   wfiInlineInput('바이브 설정', 'vibes', 'shared', 'flex-none'),
 ]);
 
+const SDImageGenEasyPreset = new WFVarBuilder()
+  .addIntVar('cfgRescale', 0, 1, 0.01, 0)
+  .addIntVar('steps', 1, 50, 1, 28)
+  .addIntVar('promptGuidance', 0, 10, 0.1, 5)
+  .addSamplingVar('sampling', Sampling.KEulerAncestral)
+  .addPromptVar('frontPrompt', defaultFPrompt)
+  .addPromptVar('backPrompt', defaultBPrompt)
+  .addPromptVar('uc', defaultUC)
+  .addNoiseScheduleVar('noiseSchedule', NoiseSchedule.Native)
+  .addBoolVar('useCoords', false)
+  .addBoolVar('legacyPromptConditioning', false)
+  .addBoolVar('varietyPlus', false)
+
 const SDImageGenEasyShared = SDImageGenShared.clone()
   .addPromptVar('characterPrompt', '')
   .addPromptVar('backgroundPrompt', '')
-  .addPromptVar('uc', '');
+  .addPromptVar('uc', '')
+  .addCharacterPromptsVar('characterPrompts', []);
 
 const SDImageGenEasyUI = wfiStack([
   wfiProfilePresetSelect(),
@@ -90,7 +104,7 @@ const SDImageGenEasyUI = wfiStack([
   wfiInlineInput('배경 관련 태그', 'backgroundPrompt', 'shared', 'flex-1'),
   wfiInlineInput('태그 밴 리스트', 'uc', 'shared', 'flex-1'),
   wfiInlineInput('시드', 'seed', 'shared', 'flex-none'),
-  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'preset', 'flex-none'),
+  wfiInlineInput('캐릭터 프롬프트', 'characterPrompts', 'shared', 'flex-none'),
   wfiInlineInput('바이브 설정', 'vibes', 'shared', 'flex-none'),
 ]);
 
@@ -137,7 +151,8 @@ const SDImageGenHandler = async (
     prompt: prompt,
     sampling: preset.sampling,
     uc: preset.uc,
-    characterPrompts: preset.characterPrompts.map((p: CharacterPrompt, i: number) => ({
+    characterPrompts: (shared.type === 'SDImageGenEasy' ? shared.characterPrompts : preset.characterPrompts
+      ).map((p: CharacterPrompt, i: number) => ({
       ...p,
       prompt: lowerPromptNode(characterPrompts[i]),
     })),
@@ -197,7 +212,7 @@ export const SDImageGenEasyDef = new WFDefBuilder('SDImageGenEasy')
   .setTitle('이미지 생성 (이지모드)')
   .setBackendType('image')
   .setI2I(false)
-  .setPresetVars(SDImageGenPreset.build())
+  .setPresetVars(SDImageGenEasyPreset.build())
   .setSharedVars(SDImageGenEasyShared.build())
   .setEditor(SDImageGenEasyUI)
   .setInnerEditor(SDImageGenEasyInnerUI)

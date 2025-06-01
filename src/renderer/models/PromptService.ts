@@ -304,14 +304,15 @@ export const createSDCharacterPrompts = async (
   shared: any,
   scene: Scene,
 ) => {
-  if (!preset.characterPrompts || preset.characterPrompts.length === 0) 
+  const characterPrompts = shared.type === 'SDImageGenEasy' ? shared.characterPrompts : preset.characterPrompts;
+  if (!characterPrompts || characterPrompts.length === 0) 
     return [];
 
   return await dfsPrompts(session, scene, (piece) => piece?.characterPrompts || [], async (promptComb) => {
     const characterPromptsResult: PromptNode[] = [];
     
-    for (let i = 0; i < preset.characterPrompts.length; i++) {
-      const characterPrompt = preset.characterPrompts[i];
+    for (let i = 0; i < characterPrompts.length; i++) {
+      const characterPrompt = characterPrompts[i];
       const front = toPARR(characterPrompt.prompt);
       
       // Collect all character prompts from the selected pieces

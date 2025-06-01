@@ -1468,7 +1468,7 @@ export const PreSetEditorImpl = observer(
                 type: 'inline', 
                 label: 'Characters', 
                 field: editCharacters, 
-                fieldType: 'preset', 
+                fieldType: shared.type === 'SDImageGenEasy' ? 'shared' : 'preset',
                 flex: 'flex-none' 
               } as WFIInlineInput} />
             }
