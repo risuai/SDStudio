@@ -161,6 +161,21 @@ export class NovelAiImageGenService implements ImageGenService {
         add_original_image: params.originalImage ? true : false,
         normalize_reference_strength_multiple: true,
         skip_cfg_above_sigma: null,
+        v4_prompt: {
+          caption: {
+            base_caption: params.prompt,
+            char_captions: [],
+          },
+          use_coords: params.useCoords,
+          use_order: true,
+        },
+        v4_negative_prompt: {
+          caption: {
+            base_caption: params.uc,
+            char_captions: [],
+          },
+          legacy_uc: params.legacyPromptConditioning,
+        },
       },
     };
     if (params.vibes.length) {
@@ -215,27 +230,14 @@ export class NovelAiImageGenService implements ImageGenService {
         uc: params.characterUCs?.[index] ?? '',
         center: charaPos(index),
       }));
-      body.parameters.v4_prompt = {
-        caption: {
-          base_caption: params.prompt,
-          char_captions: params.characterPrompts.map((charPrompt, index) => ({
-            char_caption: charPrompt,
-            centers: [charaPos(index)],
-          })),
-        },
-        use_coords: params.useCoords,
-        use_order: true,
-      };
-      body.parameters.v4_negative_prompt = {
-        caption: {
-          base_caption: params.uc,
-          char_captions: params.characterUCs?.map((charUC, index) => ({
-            char_caption: charUC,
-            centers: [charaPos(index)],
-          })) ?? [],
-        },
-        legacy_uc: params.legacyPromptConditioning,
-      };
+      body.parameters.v4_prompt.caption.char_captions = params.characterPrompts.map((charPrompt, index) => ({
+        char_caption: charPrompt,
+        centers: [charaPos(index)],
+      }));
+      body.parameters.v4_negative_prompt.caption.char_captions = params.characterUCs?.map((charUC, index) => ({
+        char_caption: charUC,
+        centers: [charaPos(index)],
+      })) ?? [];
     }
 
     console.log(body);

@@ -285,6 +285,7 @@ class GenerateImageTaskHandler implements TaskHandler {
       prompt: prompt,
       uc: job.uc,
       model: Model.Anime,
+      originalImage: true,
       resolution: lowerResolution(
         resol,
         task.params.scene!.resolutionWidth,
