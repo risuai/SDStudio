@@ -3,7 +3,12 @@ import { FloatView } from './FloatView';
 import ConfigScreen from './ConfigScreen';
 import SessionSelect from './SessionSelect';
 import { Session } from '../models/types';
-import { loginService, backend, taskQueueService, imageService } from '../models';
+import {
+  loginService,
+  backend,
+  taskQueueService,
+  imageService,
+} from '../models';
 
 const TobBar = () => {
   const [loggedIn, setLoggedIn] = useState(false);

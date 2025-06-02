@@ -1,5 +1,10 @@
 import { Config } from '../../main/config';
-import { EncodeVibeImageInput, ImageAugmentInput, ImageGenInput, ImageGenService } from './imageGen';
+import {
+  EncodeVibeImageInput,
+  ImageAugmentInput,
+  ImageGenInput,
+  ImageGenService,
+} from './imageGen';
 import { Backend, FileEntry, ResizeImageInput } from '../backend';
 import { NovelAiFetcher, NovelAiImageGenService } from './genVendors/nai';
 import { ImageContextAlt, SceneContextAlt } from '../models/types';
@@ -24,7 +29,7 @@ class ElectronFetcher implements NovelAiFetcher {
     });
     clearTimeout(timeoutId);
     if (!response.ok) {
-      console.error(await response.json())
+      console.error(await response.json());
       throw new Error(`Failed to fetch: ${response.status}`);
     }
     return new Uint8Array(await response.arrayBuffer());

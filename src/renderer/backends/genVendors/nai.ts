@@ -110,7 +110,10 @@ export class NovelAiImageGenService implements ImageGenService {
 
     const config = await backend.getConfig();
 
-    let modelValue = this.translateModel(params.model, config.modelVersion ?? ModelVersion.V4_5);
+    let modelValue = this.translateModel(
+      params.model,
+      config.modelVersion ?? ModelVersion.V4_5,
+    );
 
     const seed = params.seed ?? this.getRandomInt(1, 2100000000);
     let action = undefined;
@@ -182,7 +185,9 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.reference_strength_multiple = params.vibes.map(
         (v) => v.strength,
       );
-      body.parameters.reference_image_multiple = params.vibes.map((v) => v.image)
+      body.parameters.reference_image_multiple = params.vibes.map(
+        (v) => v.image,
+      );
     }
     if (params.image) {
       body.parameters.image = params.image;
@@ -203,17 +208,22 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.color_correct = true;
     }
     if (params.sampling == Sampling.KEulerAncestral) {
-      body.parameters.deliberate_euler_ancestral_bug = false
+      body.parameters.deliberate_euler_ancestral_bug = false;
     }
     if (params.varietyPlus) {
       let sigmaCoef: number;
       switch (config.modelVersion) {
-        case ModelVersion.V4_5: case ModelVersion.V4_5Curated:
-          sigmaCoef = 58; break;
-        case ModelVersion.V4: case ModelVersion.V4Curated:
-          sigmaCoef = 19; break;
+        case ModelVersion.V4_5:
+        case ModelVersion.V4_5Curated:
+          sigmaCoef = 58;
+          break;
+        case ModelVersion.V4:
+        case ModelVersion.V4Curated:
+          sigmaCoef = 19;
+          break;
         case undefined:
-          sigmaCoef = 0; break;
+          sigmaCoef = 0;
+          break;
       }
       const defaultPixels = 832 * 1216;
       const resPixels = resolutionValue.width * resolutionValue.height;
@@ -222,22 +232,27 @@ export class NovelAiImageGenService implements ImageGenService {
     }
     if (params.characterPrompts?.length) {
       const center = { x: 0.5, y: 0.5 };
-      const charaPos = (index: number) => params.useCoords ?
-        params.characterPositions?.[index] ?? center
-        : center;
-      body.parameters.characterPrompts = params.characterPrompts.map((charPrompt, index) => ({
-        prompt: charPrompt,
-        uc: params.characterUCs?.[index] ?? '',
-        center: charaPos(index),
-      }));
-      body.parameters.v4_prompt.caption.char_captions = params.characterPrompts.map((charPrompt, index) => ({
-        char_caption: charPrompt,
-        centers: [charaPos(index)],
-      }));
-      body.parameters.v4_negative_prompt.caption.char_captions = params.characterUCs?.map((charUC, index) => ({
-        char_caption: charUC,
-        centers: [charaPos(index)],
-      })) ?? [];
+      const charaPos = (index: number) =>
+        params.useCoords
+          ? (params.characterPositions?.[index] ?? center)
+          : center;
+      body.parameters.characterPrompts = params.characterPrompts.map(
+        (charPrompt, index) => ({
+          prompt: charPrompt,
+          uc: params.characterUCs?.[index] ?? '',
+          center: charaPos(index),
+        }),
+      );
+      body.parameters.v4_prompt.caption.char_captions =
+        params.characterPrompts.map((charPrompt, index) => ({
+          char_caption: charPrompt,
+          centers: [charaPos(index)],
+        }));
+      body.parameters.v4_negative_prompt.caption.char_captions =
+        params.characterUCs?.map((charUC, index) => ({
+          char_caption: charUC,
+          centers: [charaPos(index)],
+        })) ?? [];
     }
 
     console.log(body);
@@ -321,7 +336,10 @@ export class NovelAiImageGenService implements ImageGenService {
   async encodeVibeImage(authorization: string, params: EncodeVibeImageInput) {
     const url = this.apiEndpoint2;
     const config = await backend.getConfig();
-    const modelValue = this.translateModel(Model.Anime, config.modelVersion ?? ModelVersion.V4);
+    const modelValue = this.translateModel(
+      Model.Anime,
+      config.modelVersion ?? ModelVersion.V4,
+    );
     const body = {
       image: params.image,
       model: modelValue,

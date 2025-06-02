@@ -134,7 +134,7 @@ export interface WFSelectVar extends WFAbstractVar {
 
 export interface WFCharacterPromptsVar extends WFAbstractVar {
   type: 'characterPrompts';
-  default: CharacterPrompt[],
+  default: CharacterPrompt[];
 }
 
 export type WFVar =
@@ -633,7 +633,9 @@ export class WFDefBuilder {
     return this;
   }
 
-  setCreateCharacterPrompts(createCharacterPrompts: WFCreateCharacterPrompts): this {
+  setCreateCharacterPrompts(
+    createCharacterPrompts: WFCreateCharacterPrompts,
+  ): this {
     this.workflowDef.createCharacterPrompts = createCharacterPrompts;
     return this;
   }

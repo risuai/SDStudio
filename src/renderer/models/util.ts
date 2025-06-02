@@ -68,11 +68,17 @@ export async function extractPromptDataFromBase64(
     const data = JSON.parse(comment.value as string);
 
     if (data['prompt']) {
-      const charPrompts = data['v4_prompt']['caption']['char_captions'].map((c: any) => c.char_caption)
-      const charPos = data['v4_prompt']['caption']['char_captions'].map((c: any) => c.centers[0])
-      const charUCs = data['v4_negative_prompt']['caption']['char_captions'].map((c: any) => c.char_caption)
+      const charPrompts = data['v4_prompt']['caption']['char_captions'].map(
+        (c: any) => c.char_caption,
+      );
+      const charPos = data['v4_prompt']['caption']['char_captions'].map(
+        (c: any) => c.centers[0],
+      );
+      const charUCs = data['v4_negative_prompt']['caption'][
+        'char_captions'
+      ].map((c: any) => c.char_caption);
 
-      const characterPrompts: CharacterPrompt[] = []
+      const characterPrompts: CharacterPrompt[] = [];
       for (let i = 0; i < charPrompts.length; i++) {
         characterPrompts.push({
           id: `${i}`,

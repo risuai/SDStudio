@@ -1,5 +1,10 @@
 import { Config } from '../../main/config';
-import { EncodeVibeImageInput, ImageAugmentInput, ImageGenInput, ImageGenService } from './imageGen';
+import {
+  EncodeVibeImageInput,
+  ImageAugmentInput,
+  ImageGenInput,
+  ImageGenService,
+} from './imageGen';
 import {
   Backend,
   FileEntry,

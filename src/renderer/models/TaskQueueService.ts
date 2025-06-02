@@ -181,7 +181,11 @@ export const getSceneKey = (session: Session, scene: GenericScene) => {
   return session.name + '/' + scene.type + '/' + scene.name;
 };
 
-async function handleNAIDelay(numTry: number, fast: boolean, delayTime: number) {
+async function handleNAIDelay(
+  numTry: number,
+  fast: boolean,
+  delayTime: number,
+) {
   if (numTry === 0 && fast) {
     await sleep(delayTime);
   } else if (numTry <= 2 && fast) {
@@ -191,7 +195,7 @@ async function handleNAIDelay(numTry: number, fast: boolean, delayTime: number) 
     if (numTry === 0 && Math.random() > 0.98) {
       await sleep(
         (Math.random() * LARGE_RANDOM_DELAY_STD + LARGE_RANDOM_DELAY_BIAS) *
-        delayTime,
+          delayTime,
       );
     } else {
       await sleep(
@@ -236,7 +240,11 @@ class GenerateImageTaskHandler implements TaskHandler {
       );
   }
 
-  async handleDelay(task: Task, numTry: number, delayTime: number): Promise<void> {
+  async handleDelay(
+    task: Task,
+    numTry: number,
+    delayTime: number,
+  ): Promise<void> {
     await handleNAIDelay(numTry, this.fast, delayTime);
   }
 
@@ -265,17 +273,30 @@ class GenerateImageTaskHandler implements TaskHandler {
     }
     const vibes = await Promise.all(
       job.vibes.map(async (vibe) => {
-        const isEncoded = await imageService.checkEncodedVibeImage(task.params.session, vibe.path, vibe.info);
-        if (!isEncoded) 
-          await imageService.encodeVibeImage(task.params.session, vibe.path, vibe.info);
-        let encoded = await imageService.fetchEncodedVibeImage(task.params.session, vibe.path, vibe.info) || '';
+        const isEncoded = await imageService.checkEncodedVibeImage(
+          task.params.session,
+          vibe.path,
+          vibe.info,
+        );
+        if (!isEncoded)
+          await imageService.encodeVibeImage(
+            task.params.session,
+            vibe.path,
+            vibe.info,
+          );
+        let encoded =
+          (await imageService.fetchEncodedVibeImage(
+            task.params.session,
+            vibe.path,
+            vibe.info,
+          )) || '';
         encoded = dataUriToBase64(encoded);
-        
+
         return {
           image: encoded,
           info: vibe.info,
           strength: vibe.strength,
-        }
+        };
       }),
     );
     const resol = job.overrideResolution
@@ -442,7 +463,11 @@ class RemoveBgTaskHandler implements TaskHandler {
     );
   }
 
-  async handleDelay(task: Task, numTry: number, delayTime: number): Promise<void> {
+  async handleDelay(
+    task: Task,
+    numTry: number,
+    delayTime: number,
+  ): Promise<void> {
     return;
   }
 
@@ -493,7 +518,11 @@ class AugmentTaskHandler implements TaskHandler {
     );
   }
 
-  async handleDelay(task: Task, numTry: number, delayTime: number): Promise<void> {
+  async handleDelay(
+    task: Task,
+    numTry: number,
+    delayTime: number,
+  ): Promise<void> {
     await handleNAIDelay(numTry, false, delayTime);
   }
 
@@ -861,7 +890,12 @@ export const queueWorkflow = async (
 ) => {
   const [type, preset, shared, def] = session.getCommonSetup(workflow);
   const prompts = await def.createPrompt!(session, scene, preset, shared);
-  const characterPrompts = await def.createCharacterPrompts!(session, scene, preset, shared);
+  const characterPrompts = await def.createCharacterPrompts!(
+    session,
+    scene,
+    preset,
+    shared,
+  );
   const scene_ = scene as Scene;
   for (let i = 0; i < prompts.length; i++) {
     await def.handler(

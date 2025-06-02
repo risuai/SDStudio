@@ -529,7 +529,9 @@ const ResultDetailView = observer(
     const [image, setImage] = useState<string | undefined>(undefined);
     const watchedImages = useRef(new Set<string>());
     const [middlePrompt, setMiddlePrompt] = useState<string>('');
-    const [characterPrompts, setCharacterPrompts] = useState<CharacterPrompt[]>([]);
+    const [characterPrompts, setCharacterPrompts] = useState<CharacterPrompt[]>(
+      [],
+    );
     const [seed, setSeed] = useState<string>('');
     const [scale, setScale] = useState<string>('');
     const [sampler, setSampler] = useState<string>('');
@@ -737,7 +739,10 @@ const ResultDetailView = observer(
               />
             </div>
             {characterPrompts.map((prompt, index) => (
-              <div key={index} className="w-full mb-4 border border-gray-200 dark:border-gray-700 rounded-md p-3">
+              <div
+                key={index}
+                className="w-full mb-4 border border-gray-200 dark:border-gray-700 rounded-md p-3"
+              >
                 <div className="gray-label">캐릭터 프롬프트 </div>
                 <PromptHighlighter
                   text={prompt.prompt}

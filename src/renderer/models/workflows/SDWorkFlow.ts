@@ -45,7 +45,7 @@ const SDImageGenPreset = new WFVarBuilder()
   .addCharacterPromptsVar('characterPrompts', [])
   .addBoolVar('useCoords', false)
   .addBoolVar('legacyPromptConditioning', false)
-  .addBoolVar('varietyPlus', false)
+  .addBoolVar('varietyPlus', false);
 
 const SDImageGenShared = new WFVarBuilder()
   .addVibeSetVar('vibes')
@@ -72,7 +72,12 @@ const SDImageGenUI = wfiStack([
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
     wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
-    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput(
+      'Legacy Prompt Conditioning 모드',
+      'legacyPromptConditioning',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'shared', 'flex-none'),
@@ -89,7 +94,7 @@ const SDImageGenEasyPreset = new WFVarBuilder()
   .addNoiseScheduleVar('noiseSchedule', NoiseSchedule.Native)
   .addBoolVar('useCoords', false)
   .addBoolVar('legacyPromptConditioning', false)
-  .addBoolVar('varietyPlus', false)
+  .addBoolVar('varietyPlus', false);
 
 const SDImageGenEasyShared = SDImageGenShared.clone()
   .addPromptVar('characterPrompt', '')
@@ -126,7 +131,12 @@ const SDImageGenEasyInnerUI = wfiStack([
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
     wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
-    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput(
+      'Legacy Prompt Conditioning 모드',
+      'legacyPromptConditioning',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
 ]);
@@ -151,8 +161,10 @@ const SDImageGenHandler = async (
     prompt: prompt,
     sampling: preset.sampling,
     uc: preset.uc,
-    characterPrompts: (shared.type === 'SDImageGenEasy' ? shared.characterPrompts : preset.characterPrompts
-      ).map((p: CharacterPrompt, i: number) => ({
+    characterPrompts: (shared.type === 'SDImageGenEasy'
+      ? shared.characterPrompts
+      : preset.characterPrompts
+    ).map((p: CharacterPrompt, i: number) => ({
       ...p,
       prompt: lowerPromptNode(characterPrompts[i]),
     })),
@@ -193,8 +205,13 @@ const SDCreateCharacterPrompts = async (
   preset: any,
   shared: any,
 ) => {
-  return await createSDCharacterPrompts(session, preset, shared, scene as Scene);
-}
+  return await createSDCharacterPrompts(
+    session,
+    preset,
+    shared,
+    scene as Scene,
+  );
+};
 
 export const SDImageGenDef = new WFDefBuilder('SDImageGen')
   .setTitle('이미지 생성')
@@ -267,7 +284,12 @@ const SDInpaintUI = wfiStack([
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
     wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
-    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput(
+      'Legacy Prompt Conditioning 모드',
+      'legacyPromptConditioning',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'preset', 'flex-none'),
@@ -364,8 +386,10 @@ export const SDInpaintDef = new WFDefBuilder('SDInpaint')
   .setCreatePreset(createInpaintPreset)
   .build();
 
-const SDI2IPreset = SDInpaintPreset.clone()
-  .addStringVar('overrideResolution', '');
+const SDI2IPreset = SDInpaintPreset.clone().addStringVar(
+  'overrideResolution',
+  '',
+);
 
 const SDI2IUI = wfiStack([
   wfiInlineInput('이미지', 'image', 'preset', 'flex-none'),
@@ -387,7 +411,12 @@ const SDI2IUI = wfiStack([
     wfiInlineInput('노이즈 스케줄', 'noiseSchedule', 'preset', 'flex-none'),
     wfiInlineInput('CFG 리스케일', 'cfgRescale', 'preset', 'flex-none'),
     wfiInlineInput('캐릭터 위치 지정', 'useCoords', 'preset', 'flex-none'),
-    wfiInlineInput('Legacy Prompt Conditioning 모드', 'legacyPromptConditioning', 'preset', 'flex-none'),
+    wfiInlineInput(
+      'Legacy Prompt Conditioning 모드',
+      'legacyPromptConditioning',
+      'preset',
+      'flex-none',
+    ),
     wfiInlineInput('Variety+', 'varietyPlus', 'preset', 'flex-none'),
   ]),
   wfiInlineInput('바이브 설정', 'vibes', 'preset', 'flex-none'),

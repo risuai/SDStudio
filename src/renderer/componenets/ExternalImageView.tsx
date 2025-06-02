@@ -116,20 +116,24 @@ export const ExternalImageView = observer(
                     className="w-full h-24 overflow-auto"
                   />
                 </div>
-                {job.characterPrompts && job.characterPrompts.map((characterPrompt) => (
-                  <div key={characterPrompt.id} className="w-full mb-4 border border-gray-200 dark:border-gray-700 rounded-md p-3">
-                    <div className="gray-label">캐릭터 프롬프트</div>
-                    <PromptHighlighter
-                      text={characterPrompt.prompt}
-                      className="w-full h-24 overflow-auto"
-                    />
-                    <div className="gray-label">네거티브 프롬프트</div>
-                    <PromptHighlighter
-                      text={characterPrompt.uc}
-                      className="w-full h-24 overflow-auto"
-                    />
-                  </div>
-                ))}
+                {job.characterPrompts &&
+                  job.characterPrompts.map((characterPrompt) => (
+                    <div
+                      key={characterPrompt.id}
+                      className="w-full mb-4 border border-gray-200 dark:border-gray-700 rounded-md p-3"
+                    >
+                      <div className="gray-label">캐릭터 프롬프트</div>
+                      <PromptHighlighter
+                        text={characterPrompt.prompt}
+                        className="w-full h-24 overflow-auto"
+                      />
+                      <div className="gray-label">네거티브 프롬프트</div>
+                      <PromptHighlighter
+                        text={characterPrompt.uc}
+                        className="w-full h-24 overflow-auto"
+                      />
+                    </div>
+                  ))}
                 <div className="w-full mb-2 text-sub">
                   <span className="gray-label">시드: </span>
                   {job.seed}

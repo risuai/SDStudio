@@ -99,7 +99,12 @@ function drawChunk(
   color: string,
 ) {
   ctx.fillStyle = color;
-  ctx.fillRect(chunkX * CHUNK_SIZE, chunkY * CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+  ctx.fillRect(
+    chunkX * CHUNK_SIZE,
+    chunkY * CHUNK_SIZE,
+    CHUNK_SIZE,
+    CHUNK_SIZE,
+  );
 }
 
 function getChunksInBrush(x: number, y: number, brushSize: number) {
@@ -107,46 +112,52 @@ function getChunksInBrush(x: number, y: number, brushSize: number) {
   const centerChunk = getChunkCoordinates(x, y);
   const brushRadius = brushSize;
   const chunkRadius = Math.ceil(brushRadius / CHUNK_SIZE);
-  
+
   for (let dx = -chunkRadius; dx <= chunkRadius; dx++) {
     for (let dy = -chunkRadius; dy <= chunkRadius; dy++) {
       const chunkX = centerChunk.chunkX + dx;
       const chunkY = centerChunk.chunkY + dy;
-      
+
       // Calculate distance from brush center to chunk center
       const chunkCenterX = (chunkX + 0.5) * CHUNK_SIZE;
       const chunkCenterY = (chunkY + 0.5) * CHUNK_SIZE;
       const distance = Math.hypot(chunkCenterX - x, chunkCenterY - y);
-      
+
       if (distance <= brushRadius) {
         chunks.add(`${chunkX},${chunkY}`);
       }
     }
   }
-  
-  return Array.from(chunks).map(key => {
+
+  return Array.from(chunks).map((key) => {
     const [chunkX, chunkY] = key.split(',').map(Number);
     return { chunkX, chunkY };
   });
 }
 
-function getChunksBetween(x0: number, y0: number, x1: number, y1: number, brushSize: number) {
+function getChunksBetween(
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  brushSize: number,
+) {
   const chunks = new Set<string>();
   const dist = Math.hypot(x1 - x0, y1 - y0);
   const steps = Math.ceil(dist / (CHUNK_SIZE / 2));
-  
+
   for (let i = 0; i <= steps; i++) {
     const t = steps === 0 ? 0 : i / steps;
     const x = x0 + (x1 - x0) * t;
     const y = y0 + (y1 - y0) * t;
-    
+
     const brushChunks = getChunksInBrush(x, y, brushSize);
     brushChunks.forEach(({ chunkX, chunkY }) => {
       chunks.add(`${chunkX},${chunkY}`);
     });
   }
 
-  return Array.from(chunks).map(key => {
+  return Array.from(chunks).map((key) => {
     const [chunkX, chunkY] = key.split(',').map(Number);
     return { chunkX, chunkY };
   });

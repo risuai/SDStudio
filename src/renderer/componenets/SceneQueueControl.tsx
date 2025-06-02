@@ -395,7 +395,16 @@ const QueueControl = observer(
                   type: 'scene',
                   name: inputValue,
                   resolution: 'portrait',
-                  slots: [[{ id: v4(), prompt: '', characterPrompts: [], enabled: true }]],
+                  slots: [
+                    [
+                      {
+                        id: v4(),
+                        prompt: '',
+                        characterPrompts: [],
+                        enabled: true,
+                      },
+                    ],
+                  ],
                   mains: [],
                   imageMap: [],
                   meta: {},

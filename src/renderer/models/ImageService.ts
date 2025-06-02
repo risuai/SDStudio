@@ -179,7 +179,11 @@ export class ImageService extends EventTarget {
 
   async fetchEncodedVibeImage(session: Session, name: string, info: number) {
     const path =
-      imageService.getEncodedVibesDir(session) + '/' + name.split('/').pop()! + '&info=' + info;
+      imageService.getEncodedVibesDir(session) +
+      '/' +
+      name.split('/').pop()! +
+      '&info=' +
+      info;
     return await this.fetchImage(path);
   }
 
@@ -371,8 +375,14 @@ export class ImageService extends EventTarget {
     return path.split('/').pop()!;
   }
 
-  async storeEncodedVibeImage(session: Session, name: string, data: string, info: number) {
-    const path = imageService.getEncodedVibesDir(session) + '/' + name + '&info=' + info;
+  async storeEncodedVibeImage(
+    session: Session,
+    name: string,
+    data: string,
+    info: number,
+  ) {
+    const path =
+      imageService.getEncodedVibesDir(session) + '/' + name + '&info=' + info;
     await backend.writeDataFile(path, data);
     return path.split('/').pop()!;
   }
@@ -382,7 +392,13 @@ export class ImageService extends EventTarget {
   }
 
   getEncodedVibeImagePath(session: Session, name: string, info: number) {
-    return imageService.getEncodedVibesDir(session) + '/' + name.split('/').pop()! + '&info=' + info;
+    return (
+      imageService.getEncodedVibesDir(session) +
+      '/' +
+      name.split('/').pop()! +
+      '&info=' +
+      info
+    );
   }
 
   async refresh(
@@ -483,7 +499,7 @@ export class ImageService extends EventTarget {
   async encodeVibeImage(session: Session, path: string, info: number) {
     const vibePath = this.getVibeImagePath(session, path);
     const data = await this.fetchVibeImage(session, vibePath);
-    if (!data) return
+    if (!data) return;
     const encoded = await backend.encodeVibeImage({
       image: dataUriToBase64(data),
       info: info,

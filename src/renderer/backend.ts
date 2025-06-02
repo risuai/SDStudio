@@ -1,5 +1,9 @@
 import { Config } from '../main/config';
-import { EncodeVibeImageInput, ImageAugmentInput, ImageGenInput } from './backends/imageGen';
+import {
+  EncodeVibeImageInput,
+  ImageAugmentInput,
+  ImageGenInput,
+} from './backends/imageGen';
 
 export interface FileEntry {
   name: string;

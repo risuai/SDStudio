@@ -1,4 +1,4 @@
-import { CharacterPosition } from "../models/types";
+import { CharacterPosition } from '../models/types';
 
 export enum Model {
   Anime = 'anime',

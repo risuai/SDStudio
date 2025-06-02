@@ -1,4 +1,4 @@
-import { ModelVersion } from "../renderer/backends/imageGen";
+import { ModelVersion } from '../renderer/backends/imageGen';
 
 export type ImageEditor = 'photoshop' | 'gimp' | 'mspaint';
 

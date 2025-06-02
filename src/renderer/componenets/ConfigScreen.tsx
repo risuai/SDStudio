@@ -346,9 +346,7 @@ const ConfigScreen = observer(({ onSave }: ConfigScreenProps) => {
             onChange={(e) => setDelayTime(parseInt(e.target.value))}
             className="w-full"
           />
-          <span className='text-sm gray-label'>
-            {delayTime}ms
-          </span>
+          <span className="text-sm gray-label">{delayTime}ms</span>
         </div>
         <button
           className="mt-4 w-full back-sky py-2 rounded hover:brightness-95 active:brightness-90"

@@ -133,12 +133,7 @@ export class WorkFlowService {
     if (!wf) {
       throw new Error(`Unknown workflow type: ${type}`);
     }
-    return await wf.def.createCharacterPrompts!(
-      session,
-      scene,
-      preset,
-      shared,
-    );
+    return await wf.def.createCharacterPrompts!(session, scene, preset, shared);
   }
 
   createPreset(

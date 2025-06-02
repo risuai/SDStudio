@@ -183,7 +183,10 @@ export const VibeEditor = observer(({ disabled }: VibeEditorProps) => {
         <div className="flex-1 overflow-hidden">
           <div className="h-full overflow-auto">
             {getField().map((vibe: VibeItem) => (
-              <div key={vibe.path} className="border border-gray-300 mt-2 p-2 flex gap-2 items-begin">
+              <div
+                key={vibe.path}
+                className="border border-gray-300 mt-2 p-2 flex gap-2 items-begin"
+              >
                 <VibeImage
                   path={
                     vibe.path &&
@@ -388,7 +391,14 @@ const InnerEditor: React.FC<InnerEditorProps> = ({ type, shared, preset }) => {
     }
     scene.resolution = 'portrait';
     scene.slots = [
-      [PromptPiece.fromJSON({ enabled: true, prompt: middle, characterPrompts: [], id: v4() })],
+      [
+        PromptPiece.fromJSON({
+          enabled: true,
+          prompt: middle,
+          characterPrompts: [],
+          id: v4(),
+        }),
+      ],
     ];
     const dummyShared = workFlowService.buildShared(type);
     const prompts = await workFlowService.createPrompts(
@@ -1047,189 +1057,217 @@ const WFRPush = observer(({ element }: WFElementProps) => {
   }
 });
 
-const CharacterPromptEditor = observer(({ input }: { input: WFIInlineInput }) => {
-  const { 
-    preset, 
-    shared, 
-    meta, 
-    type, 
-    editCharacters, 
-    setEditCharacters,
-    middlePromptMode,
-    getCharacterMiddlePrompt,
-    onCharacterMiddlePromptChange
-  } = useContext(WFElementContext)!;
+const CharacterPromptEditor = observer(
+  ({ input }: { input: WFIInlineInput }) => {
+    const {
+      preset,
+      shared,
+      meta,
+      type,
+      editCharacters,
+      setEditCharacters,
+      middlePromptMode,
+      getCharacterMiddlePrompt,
+      onCharacterMiddlePromptChange,
+    } = useContext(WFElementContext)!;
 
-  const getField = () => {
-    if (input.fieldType === 'preset') return preset[input.field] || [];
-    if (input.fieldType === 'shared') return shared[input.field] || [];
-    return meta![input.field] || [];
-  };
+    const getField = () => {
+      if (input.fieldType === 'preset') return preset[input.field] || [];
+      if (input.fieldType === 'shared') return shared[input.field] || [];
+      return meta![input.field] || [];
+    };
 
-  const setField = (val: any) => {
-    if (input.fieldType === 'preset') preset[input.field] = val;
-    else if (input.fieldType === 'shared') shared[input.field] = val;
-    else meta![input.field] = val;
-  };
+    const setField = (val: any) => {
+      if (input.fieldType === 'preset') preset[input.field] = val;
+      else if (input.fieldType === 'shared') shared[input.field] = val;
+      else meta![input.field] = val;
+    };
 
-  const addCharacter = () => {
-    const characters = [...getField()];
-    characters.push({
-      id: v4(),
-      name: '',
-      prompt: '',
-      uc: '',
-      position: { x: 0.5, y: 0.5 },
-      enabled: true,
-    });
-    setField(characters);
-  };
+    const addCharacter = () => {
+      const characters = [...getField()];
+      characters.push({
+        id: v4(),
+        name: '',
+        prompt: '',
+        uc: '',
+        position: { x: 0.5, y: 0.5 },
+        enabled: true,
+      });
+      setField(characters);
+    };
 
-  const removeCharacter = (id: string) => {
-    const characters = getField().filter((c: CharacterPrompt) => c.id !== id);
-    setField(characters);
-  };
+    const removeCharacter = (id: string) => {
+      const characters = getField().filter((c: CharacterPrompt) => c.id !== id);
+      setField(characters);
+    };
 
-  const updateCharacter = (id: string, updates: Partial<CharacterPrompt>) => {
-    const characters = getField().map((c: CharacterPrompt) => 
-      c.id === id ? { ...c, ...updates } : c
-    );
-    setField(characters);
-  };
+    const updateCharacter = (id: string, updates: Partial<CharacterPrompt>) => {
+      const characters = getField().map((c: CharacterPrompt) =>
+        c.id === id ? { ...c, ...updates } : c,
+      );
+      setField(characters);
+    };
 
-  if (editCharacters !== input.field) {
-    return null;
-  }
+    if (editCharacters !== input.field) {
+      return null;
+    }
 
-  return (
-    <div className="w-full h-full overflow-hidden flex flex-col">
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-auto">
-          {getField().map((character: CharacterPrompt, i: number) => (
-            <div key={character.id} className="border rounded-md mt-3 p-3">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2 gray-label">
-                  캐릭터 프롬프트
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    className="icon-button back-red"
-                    onClick={() => removeCharacter(character.id)}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </div>
-              <div className='mb-2'>
-                <PromptEditTextArea
-                  value={character.prompt}
-                  onChange={(value) => updateCharacter(character.id, { prompt: value })}
-                />
-              </div>
-              {middlePromptMode && (<>
+    return (
+      <div className="w-full h-full overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-auto">
+            {getField().map((character: CharacterPrompt, i: number) => (
+              <div key={character.id} className="border rounded-md mt-3 p-3">
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2 gray-label">
-                    중간 프롬프트 (이 씬에만 적용됨)
+                    캐릭터 프롬프트
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="icon-button back-red"
+                      onClick={() => removeCharacter(character.id)}
+                    >
+                      <FaTrash />
+                    </button>
                   </div>
                 </div>
-                <div className='mb-2'>
+                <div className="mb-2">
                   <PromptEditTextArea
-                    value={getCharacterMiddlePrompt!(i)}
-                    onChange={(value) => onCharacterMiddlePromptChange!(i, value)}
+                    value={character.prompt}
+                    onChange={(value) =>
+                      updateCharacter(character.id, { prompt: value })
+                    }
                   />
                 </div>
-              </>)}
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2 gray-label">
-                  네거티브 프롬프트
-                </div>
-              </div>
-              <div className='mb-2'>
-                <PromptEditTextArea
-                  value={character.uc}
-                  onChange={(value) => updateCharacter(character.id, { uc: value })}
-                />
-              </div>
-              {preset.useCoords &&
-                <div className="flex w-full items-center md:flex-row flex-col gap-2">
-                  <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
-                    X 위치:
-                  </div>
-                  <div className="flex flex-1 md:w-auto w-full gap-1">
-                    <input
-                      className="flex-1"
-                      type="range"
-                      step="0.01"
-                      min="0"
-                      max="1"
-                      value={character.position?.x}
-                      onChange={(e) => updateCharacter(character.id, {
-                        position: { ...character.position, x: parseFloat(e.target.value) }
-                      })}
-                    />
-                    <div className="w-11 flex-none text-lg text-center back-lllgray">
-                      {character.position?.x?.toFixed(2)}
+                {middlePromptMode && (
+                  <>
+                    <div className="flex justify-between items-center mb-2">
+                      <div className="flex items-center gap-2 gray-label">
+                        중간 프롬프트 (이 씬에만 적용됨)
+                      </div>
                     </div>
-                  </div>
-                  <div className={'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'}>
-                    Y 위치:
-                  </div>
-                  <div className="flex flex-1 md:w-auto w-full gap-1">
-                    <input
-                      className="flex-1"
-                      type="range"
-                      step="0.01"
-                      min="0"
-                      max="1"
-                      value={character.position?.y}
-                      onChange={(e) => updateCharacter(character.id, {
-                        position: { ...character.position, y: parseFloat(e.target.value) }
-                      })}
-                    />
-                    <div className="w-11 flex-none text-lg text-center back-lllgray">
-                      {character.position?.y?.toFixed(2)}
+                    <div className="mb-2">
+                      <PromptEditTextArea
+                        value={getCharacterMiddlePrompt!(i)}
+                        onChange={(value) =>
+                          onCharacterMiddlePromptChange!(i, value)
+                        }
+                      />
                     </div>
+                  </>
+                )}
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-2 gray-label">
+                    네거티브 프롬프트
                   </div>
                 </div>
-              }
-            </div>
-          ))}
+                <div className="mb-2">
+                  <PromptEditTextArea
+                    value={character.uc}
+                    onChange={(value) =>
+                      updateCharacter(character.id, { uc: value })
+                    }
+                  />
+                </div>
+                {preset.useCoords && (
+                  <div className="flex w-full items-center md:flex-row flex-col gap-2">
+                    <div
+                      className={
+                        'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'
+                      }
+                    >
+                      X 위치:
+                    </div>
+                    <div className="flex flex-1 md:w-auto w-full gap-1">
+                      <input
+                        className="flex-1"
+                        type="range"
+                        step="0.01"
+                        min="0"
+                        max="1"
+                        value={character.position?.x}
+                        onChange={(e) =>
+                          updateCharacter(character.id, {
+                            position: {
+                              ...character.position,
+                              x: parseFloat(e.target.value),
+                            },
+                          })
+                        }
+                      />
+                      <div className="w-11 flex-none text-lg text-center back-lllgray">
+                        {character.position?.x?.toFixed(2)}
+                      </div>
+                    </div>
+                    <div
+                      className={
+                        'whitespace-nowrap flex-none mr-auto md:mr-0 gray-label'
+                      }
+                    >
+                      Y 위치:
+                    </div>
+                    <div className="flex flex-1 md:w-auto w-full gap-1">
+                      <input
+                        className="flex-1"
+                        type="range"
+                        step="0.01"
+                        min="0"
+                        max="1"
+                        value={character.position?.y}
+                        onChange={(e) =>
+                          updateCharacter(character.id, {
+                            position: {
+                              ...character.position,
+                              y: parseFloat(e.target.value),
+                            },
+                          })
+                        }
+                      />
+                      <div className="w-11 flex-none text-lg text-center back-lllgray">
+                        {character.position?.y?.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex-none mt-auto pt-2 flex gap-2 items-center">
+          <button
+            className="round-button back-green h-8"
+            onClick={addCharacter}
+          >
+            캐릭터 추가
+          </button>
+          <button
+            className="round-button back-gray h-8 w-full"
+            onClick={() => {
+              setEditCharacters(undefined);
+            }}
+          >
+            캐릭터 프롬프트 닫기
+          </button>
         </div>
       </div>
-      <div className="flex-none mt-auto pt-2 flex gap-2 items-center">
-        <button
-          className="round-button back-green h-8"
-          onClick={addCharacter}
-        >
-          캐릭터 추가
-        </button>
-        <button
-          className="round-button back-gray h-8 w-full"
-          onClick={() => {
-            setEditCharacters(undefined);
-          }}
-        >
-          캐릭터 프롬프트 닫기
-        </button>
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 export const CharacterButton = ({ input }: { input: WFIInlineInput }) => {
   const { editCharacters, setEditCharacters, preset, shared, meta } =
     useContext(WFElementContext)!;
-  
+
   const getField = () => {
     if (input.fieldType === 'preset') return preset[input.field] || [];
     if (input.fieldType === 'shared') return shared[input.field] || [];
     return meta![input.field] || [];
   };
-  
+
   const onClick = () => {
     setEditCharacters(input.field);
   };
-  
+
   return (
     <>
       {editCharacters === undefined && getField().length === 0 && (
@@ -1238,7 +1276,8 @@ export const CharacterButton = ({ input }: { input: WFIInlineInput }) => {
           onClick={onClick}
         >
           <div className="flex-1">
-            <FaUserAlt className="inline mr-2" />캐릭터 프롬프트 열기
+            <FaUserAlt className="inline mr-2" />
+            캐릭터 프롬프트 열기
           </div>
         </button>
       )}
@@ -1249,7 +1288,7 @@ export const CharacterButton = ({ input }: { input: WFIInlineInput }) => {
             onClick={onClick}
           >
             <div className="flex items-center">
-              <FaUserAlt className="mr-2" /> 
+              <FaUserAlt className="mr-2" />
               <span>캐릭터 프롬프트 열기</span>
             </div>
             <div className="flex flex-wrap gap-1">
@@ -1288,7 +1327,11 @@ const WFRInline = observer(({ element }: WFElementProps) => {
       meta![input.field] = val;
     }
   };
-  if (curGroup !== showGroup || editVibe != undefined || editCharacters !== undefined) {
+  if (
+    curGroup !== showGroup ||
+    editVibe != undefined ||
+    editCharacters !== undefined
+  ) {
     return <></>;
   }
   const key = `${type}_${preset.name}_${input.field}`;
@@ -1463,16 +1506,23 @@ export const PreSetEditorImpl = observer(
         >
           <WFGroupContext.Provider value={{}}>
             <VibeEditor disabled={false} />
-            {editCharacters && 
-              <CharacterPromptEditor input={{ 
-                type: 'inline', 
-                label: 'Characters', 
-                field: editCharacters, 
-                fieldType: shared.type === 'SDImageGenEasy' ? 'shared' : 'preset',
-                flex: 'flex-none' 
-              } as WFIInlineInput} />
-            }
-            {!editVibe && !editCharacters && <WFRenderElement element={element} />}
+            {editCharacters && (
+              <CharacterPromptEditor
+                input={
+                  {
+                    type: 'inline',
+                    label: 'Characters',
+                    field: editCharacters,
+                    fieldType:
+                      shared.type === 'SDImageGenEasy' ? 'shared' : 'preset',
+                    flex: 'flex-none',
+                  } as WFIInlineInput
+                }
+              />
+            )}
+            {!editVibe && !editCharacters && (
+              <WFRenderElement element={element} />
+            )}
           </WFGroupContext.Provider>
         </WFElementContext.Provider>
       </StackGrow>

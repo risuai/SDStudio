@@ -292,67 +292,68 @@ interface CharacterPromptsEditorProps {
   onClose: () => void;
 }
 
-const CharacterPromptsEditor = observer(({ piece, onClose }: CharacterPromptsEditorProps) => {
-  const addCharacterPrompt = () => {
-    piece.characterPrompts.push('');
-  };
+const CharacterPromptsEditor = observer(
+  ({ piece, onClose }: CharacterPromptsEditorProps) => {
+    const addCharacterPrompt = () => {
+      piece.characterPrompts.push('');
+    };
 
-  const updatePrompt = (index: number, value: string) => {
-    piece.characterPrompts[index] = value;
-  };
+    const updatePrompt = (index: number, value: string) => {
+      piece.characterPrompts[index] = value;
+    };
 
-  const removePrompt = (index: number) => {
-    piece.characterPrompts.splice(index, 1);
-  };
+    const removePrompt = (index: number) => {
+      piece.characterPrompts.splice(index, 1);
+    };
 
-  return (
-    <div className="w-full h-full overflow-hidden flex flex-col p-3">
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-auto">
-          {piece.characterPrompts.length > 0 && (
-            piece.characterPrompts.map((prompt, index) => (
-              <div key={index} className="border rounded-md mt-3 p-3">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center gap-2 gray-label">
-                    캐릭터 프롬프트
+    return (
+      <div className="w-full h-full overflow-hidden flex flex-col p-3">
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-auto">
+            {piece.characterPrompts.length > 0 &&
+              piece.characterPrompts.map((prompt, index) => (
+                <div key={index} className="border rounded-md mt-3 p-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2 gray-label">
+                      캐릭터 프롬프트
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="icon-button back-red"
+                        onClick={() => removePrompt(index)}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="icon-button back-red"
-                      onClick={() => removePrompt(index)}
-                    >
-                      <FaTrash />
-                    </button>
+                  <div className="mb-2">
+                    <PromptEditTextArea
+                      value={prompt}
+                      onChange={(value) => updatePrompt(index, value)}
+                    />
                   </div>
                 </div>
-                <div className='mb-2'>
-                  <PromptEditTextArea
-                    value={prompt}
-                    onChange={(value) => updatePrompt(index, value)}
-                  />
-                </div>
-              </div>
-            ))
-          )}
+              ))}
+          </div>
+        </div>
+        <div className="flex-none mt-auto pt-2 flex gap-2 items-center">
+          <button
+            className="round-button back-green h-8"
+            onClick={addCharacterPrompt}
+          >
+            캐릭터 추가
+          </button>
+          <button
+            className="round-button back-gray h-8 w-full"
+            onClick={onClose}
+          >
+            캐릭터 프롬프트 닫기
+          </button>
         </div>
       </div>
-      <div className="flex-none mt-auto pt-2 flex gap-2 items-center">
-        <button
-          className="round-button back-green h-8"
-          onClick={addCharacterPrompt}
-        >
-          캐릭터 추가
-        </button>
-        <button 
-          className="round-button back-gray h-8 w-full"
-          onClick={onClose}
-        >
-          캐릭터 프롬프트 닫기
-        </button>
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 export const SlotPiece = observer(
   ({ scene, piece, removePiece, moveSlotPiece, style }: SlotPieceProps) => {
@@ -410,13 +411,13 @@ export const SlotPiece = observer(
             priority={0}
             onEscape={() => setShowCharacterPrompts(false)}
           >
-            <CharacterPromptsEditor 
-              piece={piece} 
-              onClose={() => setShowCharacterPrompts(false)} 
+            <CharacterPromptsEditor
+              piece={piece}
+              onClose={() => setShowCharacterPrompts(false)}
             />
           </FloatView>
         )}
-        
+
         <div className={'mb-3 h-12 w-28 md:h-24 md:w-48'}>
           <PromptEditTextArea
             whiteBg
@@ -545,7 +546,12 @@ const SlotEditor = observer(({ scene, big }: SlotEditorProps) => {
         className="p-2 m-2 h-14 flex items-center back-lllgray clickable rounded-xl"
         onClick={() => {
           scene.slots.push([
-            PromptPiece.fromJSON({ prompt: '', characterPrompts: [], enabled: true, id: uuidv4() }),
+            PromptPiece.fromJSON({
+              prompt: '',
+              characterPrompts: [],
+              enabled: true,
+              id: uuidv4(),
+            }),
           ]);
         }}
       >
@@ -591,14 +597,14 @@ const SceneEditor = observer(({ scene, onClosed, onDeleted }: Props) => {
       return '';
     }
     return scene.slots[0][0].characterPrompts[index] || '';
-  }
+  };
 
   const onCharacterMiddlePromptChange = (index: number, txt: string) => {
     if (scene.slots.length === 0 || scene.slots[0].length === 0) {
       return;
     }
     scene.slots[0][0].characterPrompts[index] = txt;
-  }
+  };
 
   const queuePrompt = async (
     middle: string,
