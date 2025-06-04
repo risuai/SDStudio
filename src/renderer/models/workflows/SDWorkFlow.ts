@@ -350,7 +350,7 @@ const createSDI2IHandler = (type: string) => {
       characterPrompts: preset.characterPrompts,
       useCoords: preset.useCoords,
       legacyPromptConditioning: preset.legacyPromptConditioning,
-      normalizeStrength: shared.normalizeStrength,
+      normalizeStrength: preset.normalizeStrength,
       varietyPlus: preset.varietyPlus,
       noiseSchedule: preset.noiseSchedule,
       backend: preset.backend,
@@ -391,6 +391,7 @@ export function createInpaintPreset(
   preset.characterPrompts = job.characterPrompts;
   preset.useCoords = job.useCoords;
   preset.legacyPromptConditioning = job.legacyPromptConditioning;
+  preset.normalizeStrength = job.normalizeStrength;
   preset.varietyPlus = job.varietyPlus;
   return preset;
 }
@@ -468,6 +469,7 @@ export function createI2IPreset(
   preset.characterPrompts = job.characterPrompts;
   preset.useCoords = job.useCoords;
   preset.legacyPromptConditioning = job.legacyPromptConditioning;
+  preset.normalizeStrength = job.normalizeStrength;
   preset.varietyPlus = job.varietyPlus;
   return preset;
 }
