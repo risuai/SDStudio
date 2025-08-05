@@ -5,6 +5,64 @@ Stable Diffusion 계열 API와 모델을 사용하기 편하게 해주는 프론
 
 ![](images/img2.png)
 
+## 맥에서 빌드하기
+
+홈브루(Homebrew) 설치하기
+
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Nodejs와 Yarn 설치하기
+
+```
+brew install node yarn
+```
+
+Xcode command line tools 설치하기
+
+```
+xcode-select --install
+```
+
+Python distutils 설치하기
+
+```
+pip3 install setuptools --break-system-packages
+```
+
+추가 패키지 설치하기
+
+```
+yarn add mobx @anuradev/capacitor-background-mode
+```
+
+소스파일 다운받기
+
+```
+git clone https://github.com/Yurly123/SDStudio.git
+```
+
+폴더로 이동
+
+```
+cd SDStudio
+```
+
+Dependency 설치하기
+
+```
+yarn install
+```
+
+앱 빌드하기
+
+```
+yarn package
+```
+
+.dmg 파일은 SDStudio/release/build 폴더에 있습니다.
+
 ## 주요 기능
 
 ### 씬 별 이미지 생성
