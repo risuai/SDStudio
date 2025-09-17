@@ -7,6 +7,8 @@ Stable Diffusion 계열 API와 모델을 사용하기 편하게 해주는 프론
 
 ## 맥에서 빌드하기
 
+### 처음 빌드할 때
+
 홈브루(Homebrew) 설치하기
 
 ```
@@ -62,6 +64,39 @@ yarn package
 ```
 
 .dmg 파일은 SDStudio/release/build 폴더에 있습니다.
+
+### 업데이트할 때
+
+설치 폴더로 이동하기
+
+```
+cd SDStudio
+```
+
+최신 버전 가져오기
+
+```
+git pull
+```
+
+(만약 충돌이 있을 경우)
+
+```
+git checkout -- package.json
+git pull
+```
+
+Dependency 업데이트
+
+```
+yarn install
+```
+
+앱 빌드하기
+
+```
+yarn package
+```
 
 ## 주요 기능
 
