@@ -110,7 +110,7 @@ export class NovelAiImageGenService implements ImageGenService {
 
     const config = await backend.getConfig();
 
-    let modelValue = this.translateModel(
+    const modelValue = this.translateModel(
       params.model,
       config.modelVersion ?? ModelVersion.V4_5,
     );
@@ -150,8 +150,6 @@ export class NovelAiImageGenService implements ImageGenService {
         negative_prompt: params.uc,
         strength: params.imageStrength,
         qualityToggle: config.disableQuality ? false : true,
-        reference_image_multiple: [],
-        reference_strength_multiple: [],
         characterPrompts: [],
         use_coords: params.useCoords,
         legacy: false,
@@ -189,7 +187,7 @@ export class NovelAiImageGenService implements ImageGenService {
       body.parameters.reference_strength_multiple = params.vibes.map(
         (v) => v.strength,
       );
-      if (params.normalizeStrength) {
+      if (params.normalizeStrength && params.vibes.length > 1) {
         const sum = body.parameters.reference_strength_multiple.reduce(
           (acc: number, val: number) => acc + val,
           0,
@@ -198,6 +196,24 @@ export class NovelAiImageGenService implements ImageGenService {
           body.parameters.reference_strength_multiple.map(
             (val: number) => val / sum,
           );
+      }
+    }
+    if (params.characterReferences?.length) {
+      body.parameters.director_reference_images = [];
+      body.parameters.director_reference_descriptions = [];
+      body.parameters.director_reference_strength_values = [];
+      body.parameters.director_reference_information_extracted = [];
+      for (const ref of params.characterReferences) {
+        body.parameters.director_reference_images.push(ref.image);
+        body.parameters.director_reference_descriptions.push({
+          caption: {
+            base_caption: ref.description,
+            char_captions: [],
+          },
+          legacy_uc: params.legacyPromptConditioning,
+        });
+        body.parameters.director_reference_strength_values.push(ref.strength);
+        body.parameters.director_reference_information_extracted.push(ref.info);
       }
     }
     if (params.image) {
@@ -349,7 +365,7 @@ export class NovelAiImageGenService implements ImageGenService {
     const config = await backend.getConfig();
     const modelValue = this.translateModel(
       Model.Anime,
-      config.modelVersion ?? ModelVersion.V4,
+      config.modelVersion ?? ModelVersion.V4_5,
     );
     const body = {
       image: params.image,

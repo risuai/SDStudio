@@ -264,12 +264,16 @@ class GenerateImageTaskHandler implements TaskHandler {
   async handleTask(task: Task, run: TaskQueueRun) {
     const job: SDAbstractJob<PromptNode> = task.params
       .job as SDAbstractJob<PromptNode>;
+    const config = await backend.getConfig();
     let prompt = lowerPromptNode(job.prompt!);
     console.log('lowered prompt: ' + prompt);
     const outputFilePath =
       task.params.outputPath + '/' + Date.now().toString() + '.png';
     if (prompt === '') {
       prompt = '1girl';
+    }
+    if (config.furryMode) {
+      prompt = 'fur dataset, ' + prompt;
     }
     const vibes = await Promise.all(
       job.vibes.map(async (vibe) => {
@@ -299,6 +303,18 @@ class GenerateImageTaskHandler implements TaskHandler {
         };
       }),
     );
+    let references = [];
+    if (job.characterReferences?.length)
+      references = await Promise.all(
+        job.characterReferences?.map(async (ref) => ({
+          image: dataUriToBase64(
+            await imageService.fetchReferenceImage(task.params.session, ref.path) || '',
+          ),
+          info: ref.info,
+          strength: ref.strength,
+          description: ref.description,
+        }))
+      );
     const resol = job.overrideResolution
       ? job.overrideResolution
       : (task.params.scene!.resolution as Resolution);
@@ -325,12 +341,13 @@ class GenerateImageTaskHandler implements TaskHandler {
       legacyPromptConditioning: job.legacyPromptConditioning,
       normalizeStrength: job.normalizeStrength,
       varietyPlus: job.varietyPlus,
+      characterReferences: [],
       outputFilePath: outputFilePath,
       seed: job.seed,
     };
     if (job.characterPrompts?.length) {
       for (const character of job.characterPrompts) {
-        arg.characterPrompts?.push(character.prompt);
+        arg.characterPrompts?.push(lowerPromptNode(character.prompt));
         arg.characterUCs?.push(character.uc);
         arg.characterPositions?.push(character.position);
       }
@@ -352,7 +369,6 @@ class GenerateImageTaskHandler implements TaskHandler {
       arg.originalImage = true;
       arg.imageStrength = i2iJob.strength;
     }
-    const config = await backend.getConfig();
     if (!config.uuid) {
       config.uuid = v4();
       await backend.setConfig(config);

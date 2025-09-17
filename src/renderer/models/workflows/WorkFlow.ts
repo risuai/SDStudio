@@ -4,6 +4,7 @@ import {
   GenericScene,
   ModelBackend,
   PromptNode,
+  ReferenceItem,
   SDAbstractJob,
   Session,
   VibeItem,
@@ -137,6 +138,10 @@ export interface WFCharacterPromptsVar extends WFAbstractVar {
   default: CharacterPrompt[];
 }
 
+export interface WFCharacterReferenceVar extends WFAbstractVar {
+  type: 'characterReferences';
+}
+
 export type WFVar =
   | WFIntVar
   | WFVibeSetVar
@@ -150,7 +155,8 @@ export type WFVar =
   | WFNullIntVar
   | WFStringVar
   | WFSelectVar
-  | WFCharacterPromptsVar;
+  | WFCharacterPromptsVar
+  | WFCharacterReferenceVar;
 
 export type WFFieldType = 'preset' | 'shared' | 'meta';
 
@@ -255,6 +261,8 @@ function createDefaultValue(varObj: WFVar) {
       return (varObj as WFSelectVar).default;
     case 'characterPrompts':
       return (varObj as WFCharacterPromptsVar).default;
+    case 'characterReferences':
+      return [];
     default:
       throw new Error('Unknown type');
   }
@@ -280,6 +288,8 @@ function materializeWFObj(type: string, vars: WFVar[]) {
     Object.keys(params).forEach((key) => {
       if (params[key].type === 'vibeSet') {
         obj[key] = json[key].map((x: any) => VibeItem.fromJSON(x));
+      } else if (params[key].type === 'characterReferences') {
+        obj[key] = json[key].map((x: any) => ReferenceItem.fromJSON(x));
       } else {
         obj[key] = json[key];
       }
@@ -292,6 +302,8 @@ function materializeWFObj(type: string, vars: WFVar[]) {
     Object.keys(params).forEach((key) => {
       if (params[key].type === 'vibeSet') {
         json[key] = obj[key].map((x: VibeItem) => x.toJSON());
+      } else if (params[key].type === 'characterReferences') {
+        json[key] = obj[key].map((x: ReferenceItem) => x.toJSON());
       } else {
         json[key] = obj[key];
       }
@@ -435,6 +447,14 @@ export class WFVarBuilder {
       type: 'characterPrompts',
       name,
       default: defaultValue,
+    });
+    return this;
+  }
+  
+  addCharacterReferenceVar(name: string): this {
+    this.vars.push({
+      type: 'characterReferences',
+      name,
     });
     return this;
   }

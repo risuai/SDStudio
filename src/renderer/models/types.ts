@@ -58,11 +58,12 @@ export interface SDAbstractJob<T> extends AbstractJob {
   sampling: string;
   prompt: T;
   uc: string;
-  characterPrompts: CharacterPrompt[];
+  characterPrompts: CharacterPrompt<T>[];
   useCoords: boolean;
   legacyPromptConditioning: boolean;
   normalizeStrength: boolean;
   varietyPlus: boolean;
+  characterReferences: IReferenceItem[];
   noiseSchedule: string;
   backend: ModelBackend;
   vibes: IVibeItem[];
@@ -615,9 +616,9 @@ export const isValidPieceLibrary = (library: any) => {
   );
 };
 
-export interface CharacterPrompt {
+export interface CharacterPrompt<T = string> {
   id: string;
-  prompt: string;
+  prompt: T;
   uc: string;
   position: CharacterPosition;
 }
@@ -625,4 +626,33 @@ export interface CharacterPrompt {
 export interface CharacterPosition {
   x: number;
   y: number;
+}
+
+export interface IReferenceItem {
+  path: string;
+  info: number;
+  strength: number;
+  description: string;
+}
+
+export class ReferenceItem implements IReferenceItem {
+  @observable accessor path: string = '';
+  @observable accessor info: number = 0;
+  @observable accessor strength: number = 0;
+  @observable accessor description: string = '';
+
+  static fromJSON(json: IReferenceItem): IReferenceItem {
+    const item = new ReferenceItem();
+    Object.assign(item, json);
+    return item;
+  }
+
+  toJSON(): IReferenceItem {
+    return {
+      path: this.path,
+      info: this.info,
+      strength: this.strength,
+      description: this.description,
+    };
+  }
 }
